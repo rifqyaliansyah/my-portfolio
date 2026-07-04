@@ -1,5 +1,6 @@
 import Image from "next/image";
 import ImageStack from "./ImageStack";
+import Testimonials from "./Testimonials";
 
 const skills = [
   {
@@ -138,6 +139,9 @@ export default function Hero() {
           </div>
         ))}
       </div>
+        <div className="mt-[58px]">
+          <Testimonials />
+        </div>
     </div>
     <ImageStack />
     </section>

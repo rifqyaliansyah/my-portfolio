@@ -7,6 +7,10 @@
   --secondary-color: #4A4A4A;
   --border-container-color: rgba(74, 74, 74, 0.2);
   --border-toggle-color: rgba(74, 74, 74, 0.4);
+
+  --surface-color: rgba(242, 240, 239, 0.2);
+  --card-shadow-color: rgba(0, 0, 0, 0.08);
+  --dot-inactive-color: rgba(74, 74, 74, 0.25);
 }
 
 .dark {
@@ -16,6 +20,10 @@
   --secondary-color: #9E9E9E;
   --border-container-color: rgba(255, 255, 255, 0.1);
   --border-toggle-color: rgba(255, 255, 255, 0.25);
+
+  --surface-color: rgba(242, 240, 239, 0.08);
+  --card-shadow-color: rgba(0, 0, 0, 0.3);
+  --dot-inactive-color: rgba(255, 255, 255, 0.2);
 }
 
 @theme inline {
