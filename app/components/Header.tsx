@@ -49,12 +49,10 @@ export default function Header() {
 
   return (
     <header className="flex items-center justify-between w-full">
-      {/* Logo Group */}
       <div className="text-[24px] font-semibold text-brand-primary leading-none select-none tracking-tight">
         Hola!
       </div>
 
-      {/* Navigation Menu and Toggle Group */}
       <div className="flex items-center">
         <nav className="flex items-center gap-[24px]">
           <a
@@ -77,17 +75,14 @@ export default function Header() {
           </a>
         </nav>
 
-        {/* Precise gap of 32px between menu and toggle */}
         <div className="w-[32px]" />
 
-        {/* Circular Theme Toggle Button */}
         <button
           onClick={toggleTheme}
           className="w-12 h-12 flex items-center justify-center rounded-full border border-brand-border-toggle text-brand-secondary hover:text-brand-primary hover:border-brand-primary transition-all duration-200 cursor-pointer focus:outline-none"
           aria-label="Toggle Theme"
         >
           {mounted && theme === "dark" ? (
-            // Sun Icon (representing dark mode active, click to set light)
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -111,7 +106,6 @@ export default function Header() {
               <path d="m19.07 4.93-1.41 1.41" />
             </svg>
           ) : (
-            // Moon Icon (representing light mode active, click to set dark)
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
