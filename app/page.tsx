@@ -9,7 +9,6 @@ import Writing from "./components/Writing";
 import GithubContributions from "./components/GithubContributions";
 import ToolsIUse from "./components/ToolsIUse";
 import Footer from "./components/Footer";
-import ScrollReveal from "./components/ScrollReveal";
 import BackToTop from "./components/BackToTop";
 
 export default function Home() {
@@ -39,34 +38,28 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    setToolsRevealed(true);
+  }, []);
+
   return (
     <div className="min-h-screen bg-page md:px-6 flex flex-col justify-start">
-      <main ref={mainRef} className="w-full max-w-[1200px] mx-auto my-0 md:my-[64px] bg-container rounded-none md:rounded-[64px] border border-brand-border-container p-6 sm:p-12 md:p-[80px] flex flex-col transition-all duration-300 relative overflow-hidden">
+      <main ref={mainRef} className="w-full max-w-[1120px] mx-auto my-0 md:my-[64px] bg-container rounded-none md:rounded-[64px] border border-brand-border-container p-6 sm:p-12 md:p-[80px] flex flex-col transition-all duration-300 relative overflow-hidden">
         <Header />
 
-        <ScrollReveal delay={0.1}>
-          <Hero />
-        </ScrollReveal>
+        <Hero />
 
-        <ScrollReveal>
-          <Projects />
-        </ScrollReveal>
+        <Projects />
 
-        <ScrollReveal>
-          <Writing />
-        </ScrollReveal>
+        <Writing />
 
-        <ScrollReveal>
-          <GithubContributions />
-        </ScrollReveal>
+        <GithubContributions />
 
-        <ScrollReveal className="relative z-20" onAnimationComplete={() => setToolsRevealed(true)}>
+        <div className="relative z-20">
           <ToolsIUse constraintsRef={mainRef} revealed={toolsRevealed} />
-        </ScrollReveal>
+        </div>
 
-        <ScrollReveal>
-          <AboutMe />
-        </ScrollReveal>
+        <AboutMe />
 
         <Footer />
       </main>
