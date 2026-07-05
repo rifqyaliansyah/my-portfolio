@@ -39,10 +39,10 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-page px-4 md:px-6 flex flex-col justify-start">
-      <main ref={mainRef} className="w-full max-w-[1200px] mx-auto my-8 md:my-[64px] bg-container rounded-[32px] md:rounded-[64px] border border-brand-border-container p-6 sm:p-12 md:p-[80px] flex flex-col transition-all duration-300 relative overflow-hidden">
+    <div className="min-h-screen bg-page md:px-6 flex flex-col justify-start">
+      <main ref={mainRef} className="w-full max-w-[1200px] mx-auto my-0 md:my-[64px] bg-container rounded-none md:rounded-[64px] border border-brand-border-container p-6 sm:p-12 md:p-[80px] flex flex-col transition-all duration-300 relative overflow-hidden">
         <Header />
-        
+
         <ScrollReveal delay={0.1}>
           <Hero />
         </ScrollReveal>
