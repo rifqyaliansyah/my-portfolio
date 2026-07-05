@@ -29,12 +29,18 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
+                  document.documentElement.classList.add('no-transition');
                   const savedTheme = localStorage.getItem('theme');
                   if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                   } else {
                     document.documentElement.classList.remove('dark');
                   }
+                  requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                      document.documentElement.classList.remove('no-transition');
+                    });
+                  });
                 } catch (e) {}
               })();
             `,

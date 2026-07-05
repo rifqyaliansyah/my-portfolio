@@ -9,12 +9,10 @@ export default function Header() {
   const [isSticky, setIsSticky] = useState(false);
 
   useEffect(() => {
-    const handleMount = () => {
-      setMounted(true);
-      const isDark = document.documentElement.classList.contains("dark");
-      setTheme(isDark ? "dark" : "light");
-    };
-    const id = requestAnimationFrame(handleMount);
+    // Read theme instantly on mount instead of inside requestAnimationFrame
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+    setMounted(true);
 
     const handleScroll = () => {
       if (window.scrollY > 150) {
@@ -27,7 +25,6 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
-      cancelAnimationFrame(id);
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);

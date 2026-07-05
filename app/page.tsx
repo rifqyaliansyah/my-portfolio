@@ -16,13 +16,11 @@ export default function Home() {
   const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Prevent browser from keeping scroll position on refresh
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
     window.scrollTo({ top: 0, left: 0 });
 
-    // Global scrollbar hide/reveal logic
     let timeoutId: number;
     const handleScroll = () => {
       document.documentElement.classList.add("is-scrolling");

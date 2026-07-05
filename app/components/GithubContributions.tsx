@@ -12,10 +12,12 @@ const ArrowIcon = () => (
 );
 
 export default function GithubContributions() {
+  const [mounted, setMounted] = useState(false);
   const [totalContributions, setTotalContributions] = useState<number | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
+    setMounted(true);
     const updateTheme = () => {
       const isDark = document.documentElement.classList.contains("dark");
       setTheme(isDark ? "dark" : "light");
@@ -67,16 +69,22 @@ export default function GithubContributions() {
       />
 
       <div className="scrollbar-auto mt-[32px] w-full overflow-x-auto overflow-y-hidden p-[24px] rounded-[12px] border border-brand-border-container bg-surface flex md:justify-center text-brand-primary">
-        <div className="min-w-max pb-2 md:pb-0 relative">
-          <GitHubCalendar
-            username="rifqyaliansyah"
-            blockSize={12}
-            blockMargin={4}
-            fontSize={12}
-            colorScheme={theme}
-            showTotalCount={false}
-            showWeekdayLabels={true}
-          />
+        <div className="min-w-max pb-2 md:pb-0 relative min-h-[140px]">
+          {mounted ? (
+            <GitHubCalendar
+              username="rifqyaliansyah"
+              blockSize={12}
+              blockMargin={4}
+              fontSize={12}
+              colorScheme={theme}
+              showTotalCount={false}
+              showWeekdayLabels={true}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-brand-secondary text-sm">
+              Loading calendar...
+            </div>
+          )}
         </div>
       </div>
     </section>
