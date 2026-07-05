@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, memo } from 'react';
+import { useState, useEffect, useMemo, useRef, memo } from 'react';
 import { motion } from 'framer-motion';
 import Title from './Title';
 
@@ -170,6 +170,12 @@ const tools = [
   { id: 16, icon: <LinearIcon />, zIndex: 38 },
 ];
 
+const MOBILE_CARD_SIZE = 72; 
+const MOBILE_OVERLAP = 18;
+const ARC_HEIGHT = 26; 
+const ARC_MAX_TILT = 14; 
+const ROW_GAP = 36; 
+
 interface CardPosition {
   left: number;
   top: number;
@@ -222,17 +228,105 @@ const ToolCard = memo(function ToolCard({
   );
 });
 
+const MobileToolCard = memo(function MobileToolCard({
+  tool,
+  posInRow,
+  rowLength,
+  isRowStart,
+}: {
+  tool: (typeof tools)[number];
+  posInRow: number;
+  rowLength: number;
+  isRowStart: boolean;
+}) {
+  const normalized = rowLength > 1 ? (posInRow - (rowLength - 1) / 2) / ((rowLength - 1) / 2) : 0;
+
+  const arcY = -ARC_HEIGHT * (1 - normalized * normalized);
+
+  const rotate = normalized * ARC_MAX_TILT;
+  const baseZIndex = 100 - Math.abs(posInRow - (rowLength - 1) / 2) * 10;
+
+  return (
+    <motion.div
+      className="
+        relative shrink-0
+        bg-container rounded-[16px] flex items-center justify-center
+        border border-brand-border-container shadow-[0_8px_30px_var(--card-shadow-color)]
+        select-none cursor-pointer
+      "
+      style={{
+        width: MOBILE_CARD_SIZE,
+        height: MOBILE_CARD_SIZE,
+        marginLeft: isRowStart ? 0 : -MOBILE_OVERLAP,
+        y: arcY,
+        rotate: `${rotate}deg`,
+        zIndex: baseZIndex,
+      }}
+
+      whileHover={{ scale: 1.2, zIndex: 200, rotate: 0 }}
+      whileTap={{ scale: 1.15, zIndex: 200, rotate: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+    >
+      {tool.icon}
+    </motion.div>
+  );
+});
+
+
+
 export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUseProps) {
   const [mounted, setMounted] = useState(false);
   const [positions, setPositions] = useState<CardPosition[]>([]);
   const [enableHover, setEnableHover] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [itemsPerRow, setItemsPerRow] = useState(5);
+  const mobileContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && window.matchMedia) {
-      const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
-      setEnableHover(!isCoarsePointer);
-    }
+    if (typeof window === "undefined" || !window.matchMedia) return;
 
+    const coarseQuery = window.matchMedia("(pointer: coarse)");
+    const widthQuery = window.matchMedia("(max-width: 767px)");
+
+    const updateFlags = () => {
+      setEnableHover(!coarseQuery.matches);
+      setIsMobile(coarseQuery.matches || widthQuery.matches);
+    };
+
+    updateFlags();
+    coarseQuery.addEventListener("change", updateFlags);
+    widthQuery.addEventListener("change", updateFlags);
+
+    return () => {
+      coarseQuery.removeEventListener("change", updateFlags);
+      widthQuery.removeEventListener("change", updateFlags);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const el = mobileContainerRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+
+    const computeItemsPerRow = (width: number) => {
+      const step = MOBILE_CARD_SIZE - MOBILE_OVERLAP;
+      const count = Math.floor((width - MOBILE_OVERLAP) / step);
+      return Math.max(1, count);
+    };
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setItemsPerRow(computeItemsPerRow(entry.contentRect.width));
+      }
+    });
+
+    observer.observe(el);
+    setItemsPerRow(computeItemsPerRow(el.getBoundingClientRect().width));
+
+    return () => observer.disconnect();
+  }, [isMobile]);
+
+  useEffect(() => {
     const cells: { row: number; col: number }[] = [];
     for (let r = 0; r < 4; r++) {
       for (let c = 0; c < 5; c++) {
@@ -266,7 +360,7 @@ export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUse
     }
   }, [revealed, positions, mounted]);
 
-  const cards = useMemo(() => {
+  const desktopCards = useMemo(() => {
     if (!mounted || positions.length === 0) return null;
     return tools.map((tool, index) => (
       <ToolCard
@@ -279,6 +373,14 @@ export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUse
     ));
   }, [mounted, positions, constraintsRef, enableHover]);
 
+  const mobileRows = useMemo(() => {
+    const rows: (typeof tools)[] = [];
+    for (let i = 0; i < tools.length; i += itemsPerRow) {
+      rows.push(tools.slice(i, i + itemsPerRow));
+    }
+    return rows;
+  }, [itemsPerRow]);
+
   return (
     <section className="mt-[128px] w-full flex flex-col items-center">
       <Title
@@ -289,9 +391,31 @@ export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUse
         showLink={false}
       />
 
-      <div className="mt-[64px] relative w-full h-[360px] sm:h-[440px] md:h-[520px] mx-auto pb-[60px]">
-        {cards}
-      </div>
+      {isMobile ? (
+        <div
+          ref={mobileContainerRef}
+          className="mt-[64px] w-full flex flex-col items-center"
+          style={{ gap: ROW_GAP, paddingTop: ARC_HEIGHT + 8, paddingBottom: 8 }}
+        >
+          {mobileRows.map((row, rowIndex) => (
+            <div key={rowIndex} className="flex items-center">
+              {row.map((tool, posInRow) => (
+                <MobileToolCard
+                  key={tool.id}
+                  tool={tool}
+                  posInRow={posInRow}
+                  rowLength={row.length}
+                  isRowStart={posInRow === 0}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-[64px] relative w-full h-[360px] sm:h-[440px] md:h-[520px] mx-auto pb-[60px]">
+          {desktopCards}
+        </div>
+      )}
     </section>
   );
 }
