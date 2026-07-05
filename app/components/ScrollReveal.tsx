@@ -8,9 +8,16 @@ interface ScrollRevealProps {
   delay?: number;
   duration?: number;
   className?: string;
+  onAnimationComplete?: () => void;
 }
 
-export default function ScrollReveal({ children, delay = 0, duration = 0.8, className = "" }: ScrollRevealProps) {
+export default function ScrollReveal({
+  children,
+  delay = 0,
+  duration = 0.8,
+  className = "",
+  onAnimationComplete,
+}: ScrollRevealProps) {
   return (
     <motion.div
       initial={{ opacity: 0, filter: "blur(12px)", y: 24 }}
@@ -19,8 +26,9 @@ export default function ScrollReveal({ children, delay = 0, duration = 0.8, clas
       transition={{
         duration: duration,
         delay: delay,
-        ease: [0.21, 1.02, 0.43, 1.01] // Custom smooth easeOutBack-like curve
+        ease: [0.21, 1.02, 0.43, 1.01],
       }}
+      onAnimationComplete={onAnimationComplete}
       className={`w-full ${className}`}
     >
       {children}

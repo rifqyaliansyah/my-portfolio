@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import AboutMe from "./components/AboutMe";
@@ -14,6 +14,7 @@ import BackToTop from "./components/BackToTop";
 
 export default function Home() {
   const mainRef = useRef<HTMLElement>(null);
+  const [toolsRevealed, setToolsRevealed] = useState(false);
 
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
@@ -59,8 +60,8 @@ export default function Home() {
           <GithubContributions />
         </ScrollReveal>
 
-        <ScrollReveal className="relative z-20">
-          <ToolsIUse constraintsRef={mainRef} />
+        <ScrollReveal className="relative z-20" onAnimationComplete={() => setToolsRevealed(true)}>
+          <ToolsIUse constraintsRef={mainRef} revealed={toolsRevealed} />
         </ScrollReveal>
 
         <ScrollReveal>

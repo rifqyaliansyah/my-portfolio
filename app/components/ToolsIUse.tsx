@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { motion } from 'framer-motion';
 import Title from './Title';
 
@@ -178,14 +178,61 @@ interface CardPosition {
 
 interface ToolsIUseProps {
   constraintsRef?: React.RefObject<HTMLElement | null>;
+  revealed?: boolean;
 }
 
-export default function ToolsIUse({ constraintsRef }: ToolsIUseProps) {
+const ToolCard = memo(function ToolCard({
+  tool,
+  pos,
+  constraintsRef,
+  enableHover,
+}: {
+  tool: (typeof tools)[number];
+  pos: CardPosition;
+  constraintsRef?: React.RefObject<HTMLElement | null>;
+  enableHover: boolean;
+}) {
+  return (
+    <motion.div
+      drag
+      dragConstraints={constraintsRef}
+      dragElastic={0.15}
+      dragMomentum={true}
+      dragTransition={{ power: 0.15, timeConstant: 250 }}
+      whileHover={enableHover ? { scale: 1.1, zIndex: 50 } : undefined}
+      whileDrag={{ scale: 1.05, cursor: "grabbing" }}
+      className={`
+        absolute w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] md:w-[100px] md:h-[100px]
+        bg-container rounded-[16px] flex items-center justify-center
+        border border-brand-border-container shadow-[0_8px_30px_var(--card-shadow-color)]
+        cursor-grab active:cursor-grabbing select-none touch-none
+      `}
+      style={{
+        left: `${pos.left}%`,
+        top: `${pos.top}%`,
+        rotate: `${pos.rotate}deg`,
+        zIndex: tool.zIndex,
+        willChange: "transform",
+        backfaceVisibility: "hidden",
+        transform: "translateZ(0)",
+      }}
+    >
+      {tool.icon}
+    </motion.div>
+  );
+});
+
+export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUseProps) {
   const [mounted, setMounted] = useState(false);
   const [positions, setPositions] = useState<CardPosition[]>([]);
+  const [enableHover, setEnableHover] = useState(true);
 
   useEffect(() => {
-    // Define a grid pool of 20 cells (5 columns x 4 rows)
+    if (typeof window !== "undefined" && window.matchMedia) {
+      const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+      setEnableHover(!isCoarsePointer);
+    }
+
     const cells: { row: number; col: number }[] = [];
     for (let r = 0; r < 4; r++) {
       for (let c = 0; c < 5; c++) {
@@ -193,28 +240,44 @@ export default function ToolsIUse({ constraintsRef }: ToolsIUseProps) {
       }
     }
 
-    // Shuffle grid cells to assign tools to random spaces/corners
     const shuffledCells = [...cells].sort(() => Math.random() - 0.5);
 
     const generated = tools.map((_, index) => {
       const cell = shuffledCells[index];
 
-      // Distribute horizontally using the cell column (5 columns total)
-      const baseLeft = 5 + cell.col * 18; // approx 18% steps
-      const leftOffset = Math.random() * 6 - 3; // +/- 3% variance
+      const baseLeft = 5 + cell.col * 18;
+      const leftOffset = Math.random() * 6 - 3;
       const left = Math.max(2, Math.min(90, baseLeft + leftOffset));
 
-      // Distribute vertically using the cell row (4 rows total)
-      const baseTop = 5 + cell.row * 22; // approx 22% steps
-      const topOffset = Math.random() * 6 - 3; // +/- 3% variance
+      const baseTop = 5 + cell.row * 22;
+      const topOffset = Math.random() * 6 - 3;
       const top = Math.max(2, Math.min(90, baseTop + topOffset));
 
-      const rotate = -20 + Math.random() * 40; // degrees
+      const rotate = -20 + Math.random() * 40;
       return { left, top, rotate };
     });
     setPositions(generated);
-    setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (revealed && positions.length > 0 && !mounted) {
+      const raf = requestAnimationFrame(() => setMounted(true));
+      return () => cancelAnimationFrame(raf);
+    }
+  }, [revealed, positions, mounted]);
+
+  const cards = useMemo(() => {
+    if (!mounted || positions.length === 0) return null;
+    return tools.map((tool, index) => (
+      <ToolCard
+        key={tool.id}
+        tool={tool}
+        pos={positions[index]}
+        constraintsRef={constraintsRef}
+        enableHover={enableHover}
+      />
+    ));
+  }, [mounted, positions, constraintsRef, enableHover]);
 
   return (
     <section className="mt-[128px] w-full flex flex-col items-center">
@@ -227,35 +290,7 @@ export default function ToolsIUse({ constraintsRef }: ToolsIUseProps) {
       />
 
       <div className="mt-[64px] relative w-full h-[360px] sm:h-[440px] md:h-[520px] mx-auto pb-[60px]">
-        {mounted && positions.length > 0 && tools.map((tool, index) => {
-          const pos = positions[index];
-          return (
-            <motion.div
-              key={tool.id}
-              drag
-              dragConstraints={constraintsRef}
-              dragElastic={0.15}
-              dragMomentum={true}
-              dragTransition={{ power: 0.15, timeConstant: 250 }}
-              whileHover={{ scale: 1.1, zIndex: 50 }}
-              whileDrag={{ scale: 1.05, cursor: "grabbing" }}
-              className={`
-                absolute w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] md:w-[100px] md:h-[100px]
-                bg-container rounded-[16px] flex items-center justify-center
-                border border-brand-border-container shadow-[0_8px_30px_var(--card-shadow-color)]
-                cursor-grab active:cursor-grabbing select-none touch-none
-              `}
-              style={{
-                left: `${pos.left}%`,
-                top: `${pos.top}%`,
-                rotate: `${pos.rotate}deg`,
-                zIndex: tool.zIndex,
-              }}
-            >
-              {tool.icon}
-            </motion.div>
-          );
-        })}
+        {cards}
       </div>
     </section>
   );
