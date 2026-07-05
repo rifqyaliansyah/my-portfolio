@@ -170,11 +170,11 @@ const tools = [
   { id: 16, icon: <LinearIcon />, zIndex: 38 },
 ];
 
-const MOBILE_CARD_SIZE = 72; 
-const MOBILE_OVERLAP = 18;
-const ARC_HEIGHT = 26; 
-const ARC_MAX_TILT = 14; 
-const ROW_GAP = 36; 
+const MOBILE_CARD_SIZE = 72;
+const MOBILE_OVERLAP = 18; 
+const ARC_HEIGHT = 26;
+const ARC_MAX_TILT = 14;
+const ROW_GAP = 36;
 
 interface CardPosition {
   left: number;
@@ -233,16 +233,16 @@ const MobileToolCard = memo(function MobileToolCard({
   posInRow,
   rowLength,
   isRowStart,
+  enableHover,
 }: {
   tool: (typeof tools)[number];
   posInRow: number;
   rowLength: number;
   isRowStart: boolean;
+  enableHover: boolean;
 }) {
   const normalized = rowLength > 1 ? (posInRow - (rowLength - 1) / 2) / ((rowLength - 1) / 2) : 0;
-
   const arcY = -ARC_HEIGHT * (1 - normalized * normalized);
-
   const rotate = normalized * ARC_MAX_TILT;
   const baseZIndex = 100 - Math.abs(posInRow - (rowLength - 1) / 2) * 10;
 
@@ -261,11 +261,12 @@ const MobileToolCard = memo(function MobileToolCard({
         y: arcY,
         rotate: `${rotate}deg`,
         zIndex: baseZIndex,
+        willChange: "transform",
+        touchAction: "manipulation",
       }}
-
-      whileHover={{ scale: 1.2, zIndex: 200, rotate: 0 }}
+      whileHover={enableHover ? { scale: 1.2, zIndex: 200, rotate: 0 } : undefined}
       whileTap={{ scale: 1.15, zIndex: 200, rotate: 0 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25, mass: 0.5 }}
     >
       {tool.icon}
     </motion.div>
@@ -406,6 +407,7 @@ export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUse
                   posInRow={posInRow}
                   rowLength={row.length}
                   isRowStart={posInRow === 0}
+                  enableHover={enableHover}
                 />
               ))}
             </div>
