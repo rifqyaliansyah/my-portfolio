@@ -31,7 +31,7 @@ const writingData = [
 
 export default function Writing() {
   return (
-    <section className="mt-[128px] w-full flex flex-col">
+    <section className="mt-32 w-full flex flex-col">
       <Title 
         title="Writing" 
         href="#writing" 
@@ -39,7 +39,7 @@ export default function Writing() {
         icon={<ArrowIcon />} 
       />
       
-      <div className="mt-[24px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px]">
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {writingData.slice(0, 3).map((article) => (
           <Card 
             key={article.id}

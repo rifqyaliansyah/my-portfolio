@@ -41,7 +41,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-page md:px-6 flex flex-col justify-start">
-      <main ref={mainRef} className="w-full max-w-[1120px] mx-auto my-0 md:my-[64px] bg-container rounded-none md:rounded-[64px] border border-brand-border-container p-6 sm:p-12 md:p-[80px] flex flex-col transition-all duration-300 relative overflow-hidden">
+      <main ref={mainRef} className="w-full max-w-280 mx-auto my-0 md:my-16 bg-container rounded-none md:rounded-[64px] border border-brand-border-container p-6 sm:p-12 md:p-20 flex flex-col transition-all duration-300 relative overflow-hidden">
         <Header />
 
         <ScrollReveal delay={0.1}>

@@ -61,22 +61,22 @@ export default function Header() {
   };
 
   const navLinks = (
-    <nav className="flex items-center flex-wrap justify-center gap-4 md:gap-[24px]">
+    <nav className="flex items-center flex-wrap justify-center gap-4 md:gap-6">
       <a
         href="#about"
-        className="relative text-[14px] md:text-[16px] font-medium text-brand-secondary hover:text-brand-primary transition-colors duration-300 py-1 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-[var(--primary-color)] after:scale-x-0 hover:after:scale-x-100 after:origin-right hover:after:origin-left after:transition-transform after:duration-300"
+        className="relative text-[14px] md:text-[16px] font-medium text-brand-secondary hover:text-brand-primary transition-colors duration-300 py-1 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-(--primary-color) after:scale-x-0 hover:after:scale-x-100 after:origin-right hover:after:origin-left after:transition-transform after:duration-300"
       >
         About
       </a>
       <a
         href="#project"
-        className="relative text-[14px] md:text-[16px] font-medium text-brand-secondary hover:text-brand-primary transition-colors duration-300 py-1 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-[var(--primary-color)] after:scale-x-0 hover:after:scale-x-100 after:origin-right hover:after:origin-left after:transition-transform after:duration-300"
+        className="relative text-[14px] md:text-[16px] font-medium text-brand-secondary hover:text-brand-primary transition-colors duration-300 py-1 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-(--primary-color) after:scale-x-0 hover:after:scale-x-100 after:origin-right hover:after:origin-left after:transition-transform after:duration-300"
       >
         Project
       </a>
       <a
         href="#ui-kita"
-        className="relative text-[14px] md:text-[16px] font-medium text-brand-secondary hover:text-brand-primary transition-colors duration-300 py-1 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-[var(--primary-color)] after:scale-x-0 hover:after:scale-x-100 after:origin-right hover:after:origin-left after:transition-transform after:duration-300"
+        className="relative text-[14px] md:text-[16px] font-medium text-brand-secondary hover:text-brand-primary transition-colors duration-300 py-1 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-(--primary-color) after:scale-x-0 hover:after:scale-x-100 after:origin-right hover:after:origin-left after:transition-transform after:duration-300"
       >
         UI Kit
       </a>
@@ -140,7 +140,7 @@ export default function Header() {
 
         <div className="flex items-center flex-wrap gap-4 md:gap-0">
           {navLinks}
-          <div className="hidden md:block w-[32px]" />
+          <div className="hidden md:block w-8" />
           {themeButton}
         </div>
       </header>
@@ -155,8 +155,7 @@ export default function Header() {
             className="fixed top-0 left-0 w-full z-40 bg-container/85 shadow-sm"
             style={{ backdropFilter: "blur(12px)" }}
           >
-            {/* inner container aligning with main content */}
-            <div className="w-full max-w-[1120px] mx-auto px-6 sm:px-12 md:px-[80px] h-[72px] flex items-center justify-between">
+            <div className="w-full max-w-280 mx-auto px-6 sm:px-12 md:px-20 h-18 flex items-center justify-between">
               <div className="text-[18px] md:text-[20px] font-semibold text-brand-primary leading-none select-none tracking-tight">
                 Hola!
               </div>

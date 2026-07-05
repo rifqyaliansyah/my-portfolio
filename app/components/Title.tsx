@@ -37,7 +37,7 @@ export default function Title({
       </div>
 
       {showLink && href && (
-        <Link href={href} className="flex items-center gap-[12px] group shrink-0">
+        <Link href={href} className="flex items-center gap-3 group shrink-0">
           <span className="text-[12px] font-medium text-brand-secondary group-hover:text-brand-primary transition-all duration-200">
             {buttonLabel}
           </span>

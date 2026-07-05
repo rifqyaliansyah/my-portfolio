@@ -42,7 +42,7 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="mt-[128px] w-full">
+    <footer className="mt-32 w-full">
       <hr style={{ border: 'none', borderTop: '1px solid currentColor', opacity: 0.15, margin: 0 }} />
 
       <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

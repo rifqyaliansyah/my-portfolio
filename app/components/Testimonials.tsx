@@ -60,9 +60,9 @@ function CardContent({ testimonial }: { testimonial: Testimonial }) {
                 {testimonial.quote}
             </p>
 
-            <div className="flex items-center gap-[8px]">
+            <div className="flex items-center gap-2">
                 <div
-                    className="flex items-center justify-center rounded-[8px] shrink-0"
+                    className="flex items-center justify-center rounded-lg shrink-0"
                     style={{ width: 28, height: 28, backgroundColor: "var(--surface-color)" }}
                 >
                     <Image
@@ -70,7 +70,7 @@ function CardContent({ testimonial }: { testimonial: Testimonial }) {
                         alt={testimonial.name}
                         width={24}
                         height={24}
-                        className="rounded-[6px] object-cover"
+                        className="rounded-md object-cover"
                         style={{ width: 24, height: 24 }}
                     />
                 </div>
@@ -190,7 +190,7 @@ export default function Testimonials() {
                         }}
                     >
                         <div
-                            className="absolute rounded-[12px] overflow-hidden"
+                            className="absolute rounded-xl overflow-hidden"
                             style={{
                                 top: BACK_OFFSET_TOP,
                                 left: BACK_OFFSET_LEFT,
@@ -213,7 +213,7 @@ export default function Testimonials() {
                         </div>
 
                         <div
-                            className="absolute rounded-[12px]"
+                            className="absolute rounded-xl"
                             style={{
                                 top: 0,
                                 left: 0,
@@ -234,7 +234,7 @@ export default function Testimonials() {
                 </div>
             </div>
 
-            <div className="mt-[16px] flex items-center gap-[6px] justify-center">
+            <div className="mt-4 flex items-center gap-1.5                       justify-center">
                 {testimonials.map((t, index) => {
                     const active = index === activeDot;
                     return (

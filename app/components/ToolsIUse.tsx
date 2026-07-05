@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import Title from './Title';
 
 const FigmaIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <path d="M20 20C20 23.682 17.015 26.667 13.333 26.667C9.652 26.667 6.667 23.682 6.667 20C6.667 16.318 9.652 13.333 13.333 13.333H20V20Z" fill="#0ACF83" />
     <path d="M13.333 13.333C9.652 13.333 6.667 10.348 6.667 6.667C6.667 2.985 9.652 0 13.333 0H20V13.333H13.333Z" fill="#A259FF" />
     <path d="M20 0H26.667C30.348 0 33.333 2.985 33.333 6.667C33.333 10.348 30.348 13.333 26.667 13.333H20V0Z" fill="#F24E1E" />
@@ -15,14 +15,14 @@ const FigmaIcon = () => (
 );
 
 const CleanShotIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <rect x="5" y="10" width="25" height="25" rx="6" stroke="var(--primary-color)" strokeWidth="3" />
     <path d="M28 2L30 10L38 12L30 14L28 22L26 14L18 12L26 10L28 2Z" fill="var(--primary-color)" />
   </svg>
 );
 
 const AvatarIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <circle cx="20" cy="20" r="16" fill="var(--primary-color)" />
     <circle cx="20" cy="15" r="7" fill="var(--bg-container)" />
     <path d="M10 32C10 26.477 14.477 22 20 22C25.523 22 30 26.477 30 32" stroke="var(--bg-container)" strokeWidth="4" strokeLinecap="round" />
@@ -30,7 +30,7 @@ const AvatarIcon = () => (
 );
 
 const DaVinciIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <rect x="2" y="2" width="36" height="36" rx="10" fill="#1A1A1A" />
     <circle cx="20" cy="15" r="8" fill="#FF3B30" style={{ mixBlendMode: 'screen' }} />
     <circle cx="15" cy="25" r="8" fill="#4CD964" style={{ mixBlendMode: 'screen' }} />
@@ -39,7 +39,7 @@ const DaVinciIcon = () => (
 );
 
 const ObsidianIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <path d="M20 2L35 15L25 38L15 38L5 15L20 2Z" fill="#A259FF" />
     <path d="M20 2L20 20L35 15L20 2Z" fill="#8A2BE2" />
     <path d="M20 20L25 38L35 15L20 20Z" fill="#6A0DAD" />
@@ -49,7 +49,7 @@ const ObsidianIcon = () => (
 );
 
 const CubeIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <path d="M20 5L35 12V28L20 35L5 28V12L20 5Z" fill="#E0E0E0" />
     <path d="M20 20L35 12V28L20 35V20Z" fill="#252525" />
     <path d="M5 12L20 20V35L5 28V12Z" fill="#4A4A4A" />
@@ -58,7 +58,7 @@ const CubeIcon = () => (
 );
 
 const RaycastIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <rect x="8" y="8" width="8" height="24" fill="var(--primary-color)" />
     <rect x="16" y="8" width="12" height="8" fill="var(--primary-color)" />
     <rect x="24" y="16" width="8" height="8" fill="var(--primary-color)" />
@@ -68,14 +68,14 @@ const RaycastIcon = () => (
 );
 
 const ArcIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <path d="M5 20C5 11.716 11.716 5 20 5C28.284 5 35 11.716 35 20V35H20C11.716 35 5 28.284 5 20Z" fill="#007AFF" />
     <circle cx="20" cy="20" r="8" fill="#FFFFFF" />
   </svg>
 );
 
 const VSCodeIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <path d="M28 6L11 18.5L5 14L28 6Z" fill="#007ACC" />
     <path d="M28 34L11 21.5L5 26L28 34Z" fill="#007ACC" />
     <path d="M35 12L28 6L11 18.5L28 34L35 28V12Z" fill="#1F9CF0" />
@@ -84,7 +84,7 @@ const VSCodeIcon = () => (
 );
 
 const NotionIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <rect x="5" y="5" width="30" height="30" rx="6" fill="#1A1A1A" />
     <path d="M11 10H29V12H11V10Z" fill="white" />
     <path d="M11 14L15 28H18L21 17L24 28H27L31 14H27L25 24L22 14H18L15 24L13 14H11Z" fill="white" />
@@ -92,7 +92,7 @@ const NotionIcon = () => (
 );
 
 const NextJsIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <circle cx="20" cy="20" r="16" fill="black" />
     <path d="M28 28L18.5 15.5V28H16V12H18.5L25.5 21.5V12H28V28Z" fill="white" />
     <path d="M24.5 23.5L28 28H26L23 24L24.5 23.5Z" fill="url(#nextjs-grad)" />
@@ -106,7 +106,7 @@ const NextJsIcon = () => (
 );
 
 const SpotifyIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <circle cx="20" cy="20" r="16" fill="#1ED760" />
     <path d="M27.5 13.5C22.5 10.5 14.5 11.5 10.5 13C9.8 13.2 9.2 12.8 9 12.2C8.8 11.5 9.2 10.9 9.8 10.7C14.5 9 23.5 8 29.2 11.5C29.8 11.9 30 12.7 29.6 13.3C29.2 13.8 28.2 14 27.5 13.5Z" fill="black" />
     <path d="M25.5 17.5C21.2 15 14.5 15.5 11.2 16.8C10.5 17 9.8 16.5 9.6 15.8C9.4 15.1 9.9 14.4 10.6 14.2C14.8 12.7 22.2 12.2 27.1 15C27.7 15.4 27.9 16.2 27.5 16.8C27 17.3 26.1 17.7 25.5 17.5Z" fill="black" />
@@ -115,7 +115,7 @@ const SpotifyIcon = () => (
 );
 
 const SlackIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <rect x="2" y="2" width="36" height="36" rx="8" fill="#4A154B" />
     <circle cx="15" cy="12" r="3" fill="#36C5F0" />
     <rect x="15" y="16" width="6" height="12" rx="3" fill="#2EB67D" />
@@ -125,7 +125,7 @@ const SlackIcon = () => (
 );
 
 const GitIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <path d="M37.5 18.5L21.5 2.5C20.5 1.5 19.5 1.5 18.5 2.5L2.5 18.5C1.5 19.5 1.5 20.5 2.5 21.5L18.5 37.5C19.5 38.5 20.5 38.5 21.5 37.5L37.5 21.5C38.5 20.5 38.5 19.5 37.5 18.5Z" fill="#F05032" />
     <circle cx="20" cy="15" r="3.5" fill="white" />
     <circle cx="20" cy="27" r="3.5" fill="white" />
@@ -136,7 +136,7 @@ const GitIcon = () => (
 );
 
 const TailwindIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <path d="M20 11C23 6.5 29 6.5 32 11C29 15.5 23 15.5 20 11Z" fill="#38BDF8" />
     <path d="M12 21C15 16.5 21 16.5 24 21C21 25.5 15 25.5 12 21Z" fill="#38BDF8" />
     <path d="M20 21C23 16.5 29 16.5 32 21C29 25.5 23 25.5 20 21Z" fill="#0EA5E9" />
@@ -145,7 +145,7 @@ const TailwindIcon = () => (
 );
 
 const LinearIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[40px] h-[40px] md:w-[48px] md:h-[48px]">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
     <circle cx="20" cy="20" r="16" fill="black" />
     <path d="M20 8C13.4 8 8 13.4 8 20C8 26.6 13.4 32 20 32C26.6 32 32 26.6 32 20H20V8Z" fill="#5E6AD2" />
   </svg>
@@ -208,8 +208,8 @@ const ToolCard = memo(function ToolCard({
       whileHover={enableHover ? { scale: 1.1, zIndex: 50 } : undefined}
       whileDrag={{ scale: 1.05, cursor: "grabbing" }}
       className={`
-        absolute w-[70px] h-[70px] sm:w-[80px] sm:h-[80px] md:w-[100px] md:h-[100px]
-        bg-container rounded-[16px] flex items-center justify-center
+        absolute w-17.5 h-17.5 sm:w-20 sm:h-20 md:w-25 md:h-25
+        bg-container rounded-2xl flex items-center justify-center
         border border-brand-border-container shadow-[0_8px_30px_var(--card-shadow-color)]
         cursor-grab active:cursor-grabbing select-none touch-none
       `}
@@ -250,7 +250,7 @@ const MobileToolCard = memo(function MobileToolCard({
     <motion.div
       className="
         relative shrink-0
-        bg-container rounded-[16px] flex items-center justify-center
+        bg-container rounded-2xl flex items-center justify-center
         border border-brand-border-container shadow-[0_8px_30px_var(--card-shadow-color)]
         select-none cursor-pointer
       "
@@ -383,7 +383,7 @@ export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUse
   }, [itemsPerRow]);
 
   return (
-    <section className="mt-[128px] w-full flex flex-col items-center">
+    <section className="mt-32 w-full flex flex-col items-center">
       <Title
         title="Tools I Use"
         description="The tools I reach for when designing and building digital products."
@@ -395,7 +395,7 @@ export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUse
       {isMobile ? (
         <div
           ref={mobileContainerRef}
-          className="mt-[64px] w-full flex flex-col items-center"
+          className="mt-16 w-full flex flex-col items-center"
           style={{ gap: ROW_GAP, paddingTop: ARC_HEIGHT + 8, paddingBottom: 8 }}
         >
           {mobileRows.map((row, rowIndex) => (
@@ -414,7 +414,7 @@ export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUse
           ))}
         </div>
       ) : (
-        <div className="mt-[64px] relative w-full h-[360px] sm:h-[440px] md:h-[520px] mx-auto pb-[60px]">
+        <div className="mt-16 relative w-full h-90 sm:h-110 md:h-130 mx-auto pb-15">
           {desktopCards}
         </div>
       )}

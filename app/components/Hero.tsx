@@ -60,11 +60,11 @@ const skills = [
 
 export default function Hero() {
   return (
-    <section className="flex flex-col md:flex-row items-start justify-between mt-[40px] md:mt-[64px] gap-[32px] md:gap-[48px]">
+    <section className="flex flex-col md:flex-row items-start justify-between mt-10 md:mt-16 gap-8 md:gap-12">
       <div className="flex flex-col items-start w-full md:w-auto min-w-0">
-        <div className="flex items-center gap-[16px] sm:gap-[24px]">
+        <div className="flex items-center gap-4 sm:gap-6">
           <div
-            className="flex items-center justify-center rounded-[12px] shrink-0"
+            className="flex items-center justify-center rounded-xl shrink-0"
             style={{
               width: 80,
               height: 80,
@@ -77,7 +77,7 @@ export default function Hero() {
               alt="Rifqy Aliansyah"
               width={70}
               height={70}
-              className="rounded-[12px] object-cover"
+              className="rounded-xl object-cover"
               style={{ width: 70, height: 70 }}
               priority
             />
@@ -89,7 +89,7 @@ export default function Hero() {
         </div>
 
         <p
-          className="mt-[20px] md:mt-[24px] text-[18px] sm:text-[20px] md:text-[24px] leading-[26px] sm:leading-[28px] md:leading-[32px] font-medium text-brand-primary text-left"
+          className="mt-5 md:mt-6 text-[18px] sm:text-[20px] md:text-[24px] leading-6.5 sm:leading-7 md:leading-8 font-medium text-brand-primary text-left"
         >
           Design Engineer who ships products,
           <br />
@@ -100,7 +100,7 @@ export default function Hero() {
 
         <a
           href="#contact"
-          className="mt-[20px] md:mt-[24px] inline-flex items-center justify-center gap-2 rounded-full font-semibold select-none hover:opacity-90 transition-opacity"
+          className="mt-5 md:mt-6 inline-flex items-center justify-center gap-2 rounded-full font-semibold select-none hover:opacity-90 transition-opacity"
           style={{
             width: 156,
             height: 45,
@@ -118,7 +118,7 @@ export default function Hero() {
           Discuss a project
         </a>
 
-        <div className="mt-[24px] md:mt-[32px] flex flex-wrap gap-[10px] md:gap-[12px] items-start w-full md:max-w-[417px]">
+        <div className="mt-6 md:mt-8 flex flex-wrap gap-2.5 md:gap-3 items-start w-full md:max-w-104.25">
           {skills.map((skill) => (
             <div
               key={skill.label}
@@ -142,7 +142,7 @@ export default function Hero() {
           ))}
         </div>
 
-        <div className="mt-[40px] md:mt-[58px] w-full">
+        <div className="mt-10 md:mt-14 w-full">
           <Testimonials />
         </div>
       </div>

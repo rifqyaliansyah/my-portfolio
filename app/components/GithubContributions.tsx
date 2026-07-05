@@ -59,7 +59,7 @@ export default function GithubContributions() {
     : 'Loading contributions...';
 
   return (
-    <section className="mt-[128px] w-full flex flex-col">
+    <section className="mt-32 w-full flex flex-col">
       <Title
         title="GitHub Contributions"
         description={description}
@@ -68,8 +68,8 @@ export default function GithubContributions() {
         icon={<ArrowIcon />}
       />
 
-      <div className="scrollbar-auto mt-[32px] w-full overflow-x-auto overflow-y-hidden p-[24px] rounded-[12px] border border-brand-border-container bg-surface flex md:justify-center text-brand-primary">
-        <div className="min-w-max pb-2 md:pb-0 relative min-h-[140px]">
+      <div className="scrollbar-auto mt-8 w-full overflow-x-auto overflow-y-hidden p-6 rounded-xl border border-brand-border-container bg-surface flex md:justify-center text-brand-primary">
+        <div className="min-w-max pb-2 md:pb-0 relative min-h-35">
           {mounted ? (
             <GitHubCalendar
               username="rifqyaliansyah"

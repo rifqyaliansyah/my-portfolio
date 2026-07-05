@@ -43,7 +43,7 @@ const projectsData = [
 
 export default function Projects() {
   return (
-    <section className="mt-[128px] w-full flex flex-col">
+    <section className="mt-32 w-full flex flex-col">
       <Title 
         title="Featured Projects" 
         href="#projects" 
@@ -51,7 +51,7 @@ export default function Projects() {
         icon={<ArrowIcon />} 
       />
       
-      <div className="mt-[24px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[24px]">
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {projectsData.slice(0, 5).map((project) => (
           <Card 
             key={project.id}
