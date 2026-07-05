@@ -60,91 +60,96 @@ const skills = [
 
 export default function Hero() {
   return (
-    <section className="flex items-start justify-between mt-[64px] gap-[48px]">
-      <div className="flex flex-col items-start">
-      <div className="flex items-center gap-[24px]">
-        <div
-          className="flex items-center justify-center rounded-[12px]"
-          style={{
-            width: 80,
-            height: 80,
-            backgroundColor: "rgba(242, 240, 239, 0.2)",
-            boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
-          }}
-        >
-          <Image
-            src="/profile.png"
-            alt="Rifqy Aliansyah"
-            width={70}
-            height={70}
-            className="rounded-[12px] object-cover"
-            style={{ width: 70, height: 70 }}
-            priority
-          />
-        </div>
-
-        <h1 className="text-[32px] font-semibold text-brand-primary leading-tight">
-          Rifqy Aliansyah
-        </h1>
-      </div>
-
-      <p
-        className="mt-[24px] text-[24px] font-medium text-brand-primary text-left"
-        style={{ lineHeight: "32px" }}
-      >
-        Design Engineer who ships products,
-        <br />
-        not just mockups. Part of
-        <br />
-        <span className="text-brand-secondary">Google Indonesia</span>
-      </p>
-
-      <a
-        href="#contact"
-        className="mt-[24px] inline-flex items-center justify-center rounded-full font-semibold select-none hover:opacity-90 transition-opacity"
-        style={{
-          width: 150,
-          height: 40,
-          paddingTop: 4,
-          paddingBottom: 4,
-          background: "linear-gradient(to top, #252525 0%, #252525 85%, #4a4a4a 100%)",
-          color: "#F2F0EF",
-          fontSize: 12,
-          lineHeight: "32px",
-        }}
-      >
-        Discuss a project
-      </a>
-
-      <div className="mt-[32px] flex flex-wrap gap-[12px] items-start" style={{ maxWidth: 417 }}>
-        {skills.map((skill) => (
+    <section className="flex flex-col md:flex-row items-start justify-between mt-[40px] md:mt-[64px] gap-[32px] md:gap-[48px]">
+      <div className="flex flex-col items-start w-full md:w-auto min-w-0">
+        <div className="flex items-center gap-[16px] sm:gap-[24px]">
           <div
-            key={skill.label}
-            className="skill-badge flex items-center rounded-full cursor-default select-none text-brand-secondary"
+            className="flex items-center justify-center rounded-[12px] shrink-0"
             style={{
-              width: 129,
-              height: 33,
-              gap: 12,
-              paddingLeft: 14,
-              paddingRight: 14,
-              border: "1px solid rgba(74, 74, 74, 0.1)",
-              boxShadow: "0 1px 4px rgba(0, 0, 0, 0.04)",
-              fontSize: 10,
-              fontWeight: 600,
-              lineHeight: "32px",
+              width: 80,
+              height: 80,
+              backgroundColor: "rgba(242, 240, 239, 0.2)",
+              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
             }}
           >
-            {skill.icon}
-            <span>{skill.label}</span>
+            <Image
+              src="/profile.png"
+              alt="Rifqy Aliansyah"
+              width={70}
+              height={70}
+              className="rounded-[12px] object-cover"
+              style={{ width: 70, height: 70 }}
+              priority
+            />
           </div>
-        ))}
-      </div>
-        <div className="mt-[58px]">
+
+          <h1 className="text-[24px] sm:text-[28px] md:text-[32px] font-semibold text-brand-primary leading-tight">
+            Rifqy Aliansyah
+          </h1>
+        </div>
+
+        <p
+          className="mt-[20px] md:mt-[24px] text-[18px] sm:text-[20px] md:text-[24px] leading-[26px] sm:leading-[28px] md:leading-[32px] font-medium text-brand-primary text-left"
+        >
+          Design Engineer who ships products,
+          <br />
+          not just mockups. Part of
+          <br />
+          <span className="text-brand-secondary">Google Indonesia</span>
+        </p>
+
+        <a
+          href="#contact"
+          className="mt-[20px] md:mt-[24px] inline-flex items-center justify-center gap-2 rounded-full font-semibold select-none hover:opacity-90 transition-opacity"
+          style={{
+            width: 156,
+            height: 45,
+            paddingTop: 4,
+            paddingBottom: 4,
+            background: "linear-gradient(to top, #252525 0%, #252525 85%, #4a4a4a 100%)",
+            color: "#F2F0EF",
+            fontSize: 12,
+            lineHeight: "32px",
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          Discuss a project
+        </a>
+
+        <div className="mt-[24px] md:mt-[32px] flex flex-wrap gap-[10px] md:gap-[12px] items-start w-full md:max-w-[417px]">
+          {skills.map((skill) => (
+            <div
+              key={skill.label}
+              className="skill-badge flex items-center rounded-full cursor-default select-none text-brand-secondary"
+              style={{
+                width: 129,
+                height: 33,
+                gap: 12,
+                paddingLeft: 14,
+                paddingRight: 14,
+                border: "1px solid rgba(74, 74, 74, 0.1)",
+                boxShadow: "0 1px 4px rgba(0, 0, 0, 0.04)",
+                fontSize: 10,
+                fontWeight: 600,
+                lineHeight: "32px",
+              }}
+            >
+              {skill.icon}
+              <span>{skill.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-[40px] md:mt-[58px] w-full">
           <Testimonials />
         </div>
-    </div>
-    <ImageStack />
+      </div>
+
+      <div className="hidden md:block">
+        <ImageStack />
+      </div>
     </section>
   );
 }
-

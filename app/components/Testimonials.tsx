@@ -45,6 +45,8 @@ const BACK_OFFSET_TOP = 12;
 const BACK_OFFSET_LEFT = (FRONT_WIDTH - BACK_WIDTH) / 2;
 const CARD_PADDING = 24;
 const CONTENT_WIDTH = FRONT_WIDTH - CARD_PADDING * 2;
+const STAGE_HEIGHT = CARD_HEIGHT + BACK_OFFSET_TOP;
+
 const SHADOW_VISIBLE = "0 8px 24px var(--card-shadow-color)";
 const SHADOW_HIDDEN = "0 8px 24px rgba(0, 0, 0, 0)";
 
@@ -91,6 +93,26 @@ export default function Testimonials() {
     const [isAnimating, setIsAnimating] = useState(false);
     const [instant, setInstant] = useState(false);
 
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const [scale, setScale] = useState(1);
+
+    useEffect(() => {
+        const el = wrapperRef.current;
+        if (!el) return;
+
+        const updateScale = () => {
+            const width = el.offsetWidth;
+            if (width > 0) {
+                setScale(Math.min(1, width / FRONT_WIDTH));
+            }
+        };
+
+        updateScale();
+        const observer = new ResizeObserver(updateScale);
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
+
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -130,7 +152,7 @@ export default function Testimonials() {
     useEffect(() => {
         startInterval();
         return clearTimers;
-    }, []);
+    }, [clearTimers, startInterval]);
 
     const handleDotClick = (index: number) => {
         if (isAnimating || index === frontIndex) return;
@@ -149,51 +171,66 @@ export default function Testimonials() {
     const backTransitionStyle = baseTransition;
 
     return (
-        <div className="flex flex-col items-center">
-            <div
-                className="relative"
-                style={{ width: FRONT_WIDTH, height: CARD_HEIGHT + BACK_OFFSET_TOP }}
-            >
+        <div className="flex flex-col items-center w-full">
+            <div ref={wrapperRef} className="w-full flex justify-center" style={{ maxWidth: FRONT_WIDTH }}>
                 <div
-                    className="absolute rounded-[12px] overflow-hidden"
                     style={{
-                        top: BACK_OFFSET_TOP,
-                        left: BACK_OFFSET_LEFT,
-                        width: isAnimating ? FRONT_WIDTH : BACK_WIDTH,
-                        height: CARD_HEIGHT,
-                        padding: CARD_PADDING,
-                        backgroundColor: "var(--bg-container)",
-                        border: isAnimating
-                            ? "1px solid var(--border-container-color)"
-                            : "1px solid transparent",
-                        boxShadow: isAnimating ? SHADOW_HIDDEN : SHADOW_VISIBLE,
-                        transform: isAnimating
-                            ? `translate(${-BACK_OFFSET_LEFT}px, ${-BACK_OFFSET_TOP}px)`
-                            : "translate(0px, 0px)",
-                        transition: backTransitionStyle,
-                        zIndex: 1,
+                        position: "relative",
+                        width: FRONT_WIDTH * scale,
+                        height: STAGE_HEIGHT * scale,
                     }}
                 >
-                    <CardContent testimonial={back} />
-                </div>
+                    <div
+                        className="relative"
+                        style={{
+                            width: FRONT_WIDTH,
+                            height: STAGE_HEIGHT,
+                            transform: `scale(${scale})`,
+                            transformOrigin: "top left",
+                        }}
+                    >
+                        <div
+                            className="absolute rounded-[12px] overflow-hidden"
+                            style={{
+                                top: BACK_OFFSET_TOP,
+                                left: BACK_OFFSET_LEFT,
+                                width: isAnimating ? FRONT_WIDTH : BACK_WIDTH,
+                                height: CARD_HEIGHT,
+                                padding: CARD_PADDING,
+                                backgroundColor: "var(--bg-container)",
+                                border: isAnimating
+                                    ? "1px solid var(--border-container-color)"
+                                    : "1px solid transparent",
+                                boxShadow: isAnimating ? SHADOW_HIDDEN : SHADOW_VISIBLE,
+                                transform: isAnimating
+                                    ? `translate(${-BACK_OFFSET_LEFT}px, ${-BACK_OFFSET_TOP}px)`
+                                    : "translate(0px, 0px)",
+                                transition: backTransitionStyle,
+                                zIndex: 1,
+                            }}
+                        >
+                            <CardContent testimonial={back} />
+                        </div>
 
-                <div
-                    className="absolute rounded-[12px]"
-                    style={{
-                        top: 0,
-                        left: 0,
-                        width: FRONT_WIDTH,
-                        height: CARD_HEIGHT,
-                        padding: CARD_PADDING,
-                        backgroundColor: "var(--bg-container)",
-                        border: "1px solid var(--border-container-color)",
-                        transform: isAnimating ? "translateY(-24px)" : "translateY(0px)",
-                        opacity: isAnimating ? 0 : 1,
-                        transition: frontTransitionStyle,
-                        zIndex: 2,
-                    }}
-                >
-                    <CardContent testimonial={front} />
+                        <div
+                            className="absolute rounded-[12px]"
+                            style={{
+                                top: 0,
+                                left: 0,
+                                width: FRONT_WIDTH,
+                                height: CARD_HEIGHT,
+                                padding: CARD_PADDING,
+                                backgroundColor: "var(--bg-container)",
+                                border: "1px solid var(--border-container-color)",
+                                transform: isAnimating ? "translateY(-24px)" : "translateY(0px)",
+                                opacity: isAnimating ? 0 : 1,
+                                transition: frontTransitionStyle,
+                                zIndex: 2,
+                            }}
+                        >
+                            <CardContent testimonial={front} />
+                        </div>
+                    </div>
                 </div>
             </div>
 

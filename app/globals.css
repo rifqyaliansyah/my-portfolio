@@ -95,3 +95,62 @@ body {
     clip-path: circle(150% at var(--ripple-x, 0px) var(--ripple-y, 0px));
   }
 }
+
+.scrollbar-auto {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 300ms ease;
+}
+
+.scrollbar-auto:hover {
+  scrollbar-color: var(--border-container-color) transparent;
+}
+
+.scrollbar-auto::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+.scrollbar-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-auto::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 99px;
+  transition: background-color 300ms ease;
+}
+
+.scrollbar-auto:hover::-webkit-scrollbar-thumb {
+  background-color: var(--secondary-color);
+  opacity: 0.4;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 300ms ease;
+}
+
+html.is-scrolling {
+  scrollbar-color: var(--secondary-color) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 99px;
+}
+
+html.is-scrolling ::-webkit-scrollbar-thumb {
+  background-color: var(--secondary-color);
+  opacity: 0.4;
+}
