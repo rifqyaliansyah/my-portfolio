@@ -1,77 +1,18 @@
-"use client";
+import { client } from "./lib/sanity";
+import { LANDING_PAGE_QUERY } from "./lib/sanity.queries";
+import { LandingPageData } from "./types/sanity";
+import ClientHomeLayout from "./components/ClientHomeLayout";
 
-import { useRef, useEffect, useState } from "react";
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import AboutMe from "./components/AboutMe";
-import Projects from "./components/Projects";
-import Writing from "./components/Writing";
-import GithubContributions from "./components/GithubContributions";
-import ToolsIUse from "./components/ToolsIUse";
-import Footer from "./components/Footer";
-import ScrollReveal from "./components/ScrollReveal";
-import BackToTop from "./components/BackToTop";
+export const revalidate = 60;
 
-export default function Home() {
-  const mainRef = useRef<HTMLElement>(null);
-  const [toolsRevealed, setToolsRevealed] = useState(false);
+export default async function Home() {
+  let data: LandingPageData | null = null;
 
-  useEffect(() => {
-    if ("scrollRestoration" in window.history) {
-      window.history.scrollRestoration = "manual";
-    }
-    window.scrollTo({ top: 0, left: 0 });
+  try {
+    data = await client.fetch<LandingPageData>(LANDING_PAGE_QUERY);
+  } catch (err) {
+    console.error("Failed to fetch Sanity data on server:", err);
+  }
 
-    let timeoutId: number;
-    const handleScroll = () => {
-      document.documentElement.classList.add("is-scrolling");
-      window.clearTimeout(timeoutId);
-      timeoutId = window.setTimeout(() => {
-        document.documentElement.classList.remove("is-scrolling");
-      }, 1500);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.clearTimeout(timeoutId);
-    };
-  }, []);
-
-  return (
-    <div className="min-h-screen bg-page md:px-6 flex flex-col justify-start">
-      <main ref={mainRef} className="w-full max-w-280 mx-auto my-0 md:my-16 bg-container rounded-none md:rounded-[64px] border border-brand-border-container p-6 sm:p-12 md:p-20 flex flex-col transition-all duration-300 relative overflow-hidden">
-        <Header />
-
-        <ScrollReveal delay={0.1}>
-          <Hero />
-        </ScrollReveal>
-
-        <ScrollReveal>
-          <Projects />
-        </ScrollReveal>
-
-        <ScrollReveal>
-          <Writing />
-        </ScrollReveal>
-
-        <ScrollReveal>
-          <GithubContributions />
-        </ScrollReveal>
-
-        <ScrollReveal className="relative z-20" onAnimationComplete={() => setToolsRevealed(true)}>
-          <ToolsIUse constraintsRef={mainRef} revealed={toolsRevealed} />
-        </ScrollReveal>
-
-        <ScrollReveal>
-          <AboutMe />
-        </ScrollReveal>
-
-        <Footer />
-      </main>
-
-      <BackToTop />
-    </div>
-  );
+  return <ClientHomeLayout data={data} />;
 }

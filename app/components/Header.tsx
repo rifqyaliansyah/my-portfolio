@@ -29,35 +29,15 @@ export default function Header() {
     };
   }, []);
 
-  const toggleTheme = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
-
-    const updateDOM = () => {
-      setTheme(newTheme);
-      localStorage.setItem("theme", newTheme);
-      if (newTheme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    };
-
-    if (!("startViewTransition" in document)) {
-      updateDOM();
-      return;
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
-
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
-
-    document.documentElement.style.setProperty("--ripple-x", `${x}px`);
-    document.documentElement.style.setProperty("--ripple-y", `${y}px`);
-
-    const doc = document as Document & {
-      startViewTransition: (callback: () => void) => void;
-    };
-    doc.startViewTransition(updateDOM);
   };
 
   const navLinks = (

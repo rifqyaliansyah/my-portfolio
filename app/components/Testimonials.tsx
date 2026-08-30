@@ -2,38 +2,17 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
+import { TestimonialData } from "@/app/types/sanity";
+import { urlFor } from "@/app/lib/sanity";
+import { fallbackTestimonials } from "@/app/lib/fallback-data";
 
-interface Testimonial {
+interface TestimonialItem {
     id: string;
     quote: string;
     name: string;
     role: string;
     avatar: string;
 }
-
-const testimonials: Testimonial[] = [
-    {
-        id: "1",
-        quote: "Rifqy selalu bisa nerjemahin requirement yang ambigu jadi UI yang rapi dan gampang dipakai.",
-        name: "Dimas Pratama",
-        role: "Product Manager",
-        avatar: "/profile.png",
-    },
-    {
-        id: "2",
-        quote: "Kerja bareng Rifqy enak banget, komunikasinya jelas dan hasilnya selalu di atas ekspektasi.",
-        name: "Sarah Amelia",
-        role: "UI/UX Designer",
-        avatar: "/profile.png",
-    },
-    {
-        id: "3",
-        quote: "Detail banget soal micro-interaction, portofolionya juga mencerminkan itu.",
-        name: "Bagas Nugraha",
-        role: "Frontend Lead",
-        avatar: "/profile.png",
-    },
-];
 
 const ROTATE_INTERVAL = 4000;
 const TRANSITION_DURATION = 600;
@@ -50,7 +29,7 @@ const STAGE_HEIGHT = CARD_HEIGHT + BACK_OFFSET_TOP;
 const SHADOW_VISIBLE = "0 8px 24px var(--card-shadow-color)";
 const SHADOW_HIDDEN = "0 8px 24px rgba(0, 0, 0, 0)";
 
-function CardContent({ testimonial }: { testimonial: Testimonial }) {
+function CardContent({ testimonial }: { testimonial: TestimonialItem }) {
     return (
         <div className="flex h-full flex-col justify-between" style={{ width: CONTENT_WIDTH }}>
             <p
@@ -87,9 +66,23 @@ function CardContent({ testimonial }: { testimonial: Testimonial }) {
     );
 }
 
-export default function Testimonials() {
+interface TestimonialsProps {
+    items?: TestimonialData[];
+}
+
+export default function Testimonials({ items }: TestimonialsProps) {
+    const list: TestimonialItem[] = items && items.length > 0
+        ? items.map((t, i) => ({
+            id: t._id || `${i + 1}`,
+            quote: t.quote,
+            name: t.name,
+            role: t.role,
+            avatar: t.avatar ? urlFor(t.avatar).width(48).height(48).url() : "/profile.png",
+        }))
+        : fallbackTestimonials;
+
     const [frontIndex, setFrontIndex] = useState(0);
-    const [nextIndex, setNextIndex] = useState(1);
+    const [nextIndex, setNextIndex] = useState(list.length > 1 ? 1 : 0);
     const [isAnimating, setIsAnimating] = useState(false);
     const [instant, setInstant] = useState(false);
 
@@ -139,15 +132,16 @@ export default function Testimonials() {
     }, []);
 
     const startInterval = useCallback(() => {
+        if (list.length <= 1) return;
         if (intervalRef.current) clearInterval(intervalRef.current);
         intervalRef.current = setInterval(() => {
             setFrontIndex((currentFront) => {
-                const target = (currentFront + 1) % testimonials.length;
+                const target = (currentFront + 1) % list.length;
                 runTransition(target);
                 return currentFront;
             });
         }, ROTATE_INTERVAL);
-    }, [runTransition]);
+    }, [list.length, runTransition]);
 
     useEffect(() => {
         startInterval();
@@ -162,8 +156,8 @@ export default function Testimonials() {
         startInterval();
     };
 
-    const front = testimonials[frontIndex];
-    const back = testimonials[nextIndex];
+    const front = list[frontIndex] || list[0];
+    const back = list[nextIndex] || list[0];
     const activeDot = isAnimating ? nextIndex : frontIndex;
 
     const baseTransition = `all ${TRANSITION_DURATION}ms cubic-bezier(0.4, 0, 0.2, 1)`;
@@ -234,8 +228,8 @@ export default function Testimonials() {
                 </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-1.5                       justify-center">
-                {testimonials.map((t, index) => {
+            <div className="mt-4 flex items-center gap-1.5 justify-center">
+                {list.map((t, index) => {
                     const active = index === activeDot;
                     return (
                         <button
@@ -260,3 +254,4 @@ export default function Testimonials() {
         </div>
     );
 }
+

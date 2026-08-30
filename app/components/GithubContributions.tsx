@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Title from './Title';
 import { GitHubCalendar } from 'react-github-calendar';
+import type { Activity } from 'react-github-calendar';
 
 const ArrowIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -11,10 +12,30 @@ const ArrowIcon = () => (
   </svg>
 );
 
-export default function GithubContributions() {
+interface GithubContributionsProps {
+  username?: string;
+}
+
+export default function GithubContributions({ username = "rifqyaliansyah" }: GithubContributionsProps) {
   const [mounted, setMounted] = useState(false);
   const [totalContributions, setTotalContributions] = useState<number | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const pendingTotal = useRef<number | null>(null);
+
+  const targetUsername = username || "rifqyaliansyah";
+
+  // transformData is called during render, so we store in a ref and sync via useEffect
+  const handleTransformData = useCallback((contributions: Activity[]) => {
+    const total = contributions.reduce((sum, day) => sum + day.count, 0);
+    pendingTotal.current = total;
+    return contributions;
+  }, []);
+
+  useEffect(() => {
+    if (pendingTotal.current !== null) {
+      setTotalContributions(pendingTotal.current);
+    }
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -31,28 +52,8 @@ export default function GithubContributions() {
       attributeFilter: ["class"]
     });
 
-    async function fetchContributions() {
-      try {
-        const response = await fetch('https://github-contributions-api.deno.dev/rifqyaliansyah.json');
-        const data = await response.json();
-
-        let sum = 0;
-        data.contributions.forEach((week: any[]) => {
-          week.forEach((day: any) => {
-            sum += day.contributionCount;
-          });
-        });
-
-        setTotalContributions(sum);
-      } catch (error) {
-        console.error('Error fetching contributions:', error);
-      }
-    }
-
-    fetchContributions();
-
     return () => observer.disconnect();
-  }, []);
+  }, [targetUsername]);
 
   const description = totalContributions !== null
     ? `${totalContributions} contributions in the last year`
@@ -63,7 +64,7 @@ export default function GithubContributions() {
       <Title
         title="GitHub Contributions"
         description={description}
-        href="https://github.com/rifqyaliansyah"
+        href={`https://github.com/${targetUsername}`}
         buttonLabel="View GitHub"
         icon={<ArrowIcon />}
       />
@@ -72,13 +73,14 @@ export default function GithubContributions() {
         <div className="min-w-max pb-2 md:pb-0 relative min-h-35">
           {mounted ? (
             <GitHubCalendar
-              username="rifqyaliansyah"
+              username={targetUsername}
               blockSize={12}
               blockMargin={4}
               fontSize={12}
               colorScheme={theme}
               showTotalCount={false}
               showWeekdayLabels={true}
+              transformData={handleTransformData}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-brand-secondary text-sm">
@@ -90,3 +92,4 @@ export default function GithubContributions() {
     </section>
   );
 }
+

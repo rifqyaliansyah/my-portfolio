@@ -151,7 +151,40 @@ const LinearIcon = () => (
   </svg>
 );
 
-const tools = [
+import Image from 'next/image';
+import { ToolData } from '@/app/types/sanity';
+import { urlFor } from '@/app/lib/sanity';
+
+const toolIconsByName: Record<string, React.ReactNode> = {
+  Figma: <FigmaIcon />,
+  CleanShot: <CleanShotIcon />,
+  Avatar: <AvatarIcon />,
+  DaVinci: <DaVinciIcon />,
+  Obsidian: <ObsidianIcon />,
+  Cube: <CubeIcon />,
+  Raycast: <RaycastIcon />,
+  Arc: <ArcIcon />,
+  'VS Code': <VSCodeIcon />,
+  VSCode: <VSCodeIcon />,
+  Notion: <NotionIcon />,
+  'React / Next.js': <NextJsIcon />,
+  Nextjs: <NextJsIcon />,
+  'Next.js': <NextJsIcon />,
+  Spotify: <SpotifyIcon />,
+  Slack: <SlackIcon />,
+  Git: <GitIcon />,
+  'Tailwind CSS': <TailwindIcon />,
+  Tailwind: <TailwindIcon />,
+  Linear: <LinearIcon />,
+};
+
+interface ToolItem {
+  id: string | number;
+  icon: React.ReactNode;
+  zIndex: number;
+}
+
+const defaultTools: ToolItem[] = [
   { id: 1, icon: <FigmaIcon />, zIndex: 20 },
   { id: 2, icon: <CleanShotIcon />, zIndex: 10 },
   { id: 3, icon: <AvatarIcon />, zIndex: 30 },
@@ -170,6 +203,7 @@ const tools = [
   { id: 16, icon: <LinearIcon />, zIndex: 38 },
 ];
 
+
 const MOBILE_CARD_SIZE = 72;
 const MOBILE_OVERLAP = 18; 
 const ARC_HEIGHT = 26;
@@ -185,6 +219,7 @@ interface CardPosition {
 interface ToolsIUseProps {
   constraintsRef?: React.RefObject<HTMLElement | null>;
   revealed?: boolean;
+  tools?: ToolData[];
 }
 
 const ToolCard = memo(function ToolCard({
@@ -193,7 +228,7 @@ const ToolCard = memo(function ToolCard({
   constraintsRef,
   enableHover,
 }: {
-  tool: (typeof tools)[number];
+  tool: ToolItem;
   pos: CardPosition;
   constraintsRef?: React.RefObject<HTMLElement | null>;
   enableHover: boolean;
@@ -235,7 +270,7 @@ const MobileToolCard = memo(function MobileToolCard({
   isRowStart,
   enableHover,
 }: {
-  tool: (typeof tools)[number];
+  tool: ToolItem;
   posInRow: number;
   rowLength: number;
   isRowStart: boolean;
@@ -273,9 +308,36 @@ const MobileToolCard = memo(function MobileToolCard({
   );
 });
 
+export default function ToolsIUse({ constraintsRef, revealed = true, tools: sanityTools }: ToolsIUseProps) {
+  const activeTools: ToolItem[] = useMemo(() => {
+    if (!sanityTools || sanityTools.length === 0) {
+      return defaultTools;
+    }
+    // Map sanity tools to visual tool cards with icons and balanced zIndexes
+    return sanityTools.map((t, idx) => {
+      let icon = toolIconsByName[t.name];
+      if (!icon && t.icon) {
+        icon = (
+          <Image
+            src={urlFor(t.icon).width(48).height(48).url()}
+            alt={t.name}
+            width={40}
+            height={40}
+            className="w-10 h-10 md:w-12 md:h-12 object-contain"
+          />
+        );
+      }
+      if (!icon) {
+        icon = defaultTools[idx % defaultTools.length].icon;
+      }
+      return {
+        id: t._id || idx + 1,
+        icon,
+        zIndex: 10 + ((idx * 7) % 35),
+      };
+    });
+  }, [sanityTools]);
 
-
-export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUseProps) {
   const [mounted, setMounted] = useState(false);
   const [positions, setPositions] = useState<CardPosition[]>([]);
   const [enableHover, setEnableHover] = useState(true);
@@ -328,31 +390,38 @@ export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUse
   }, [isMobile]);
 
   useEffect(() => {
+    const total = activeTools.length;
+    const numRows = Math.ceil(Math.sqrt(total * 0.8)) || 3;
+    const numCols = Math.ceil(total / numRows) || 5;
+
     const cells: { row: number; col: number }[] = [];
-    for (let r = 0; r < 4; r++) {
-      for (let c = 0; c < 5; c++) {
+    for (let r = 0; r < numRows; r++) {
+      for (let c = 0; c < numCols; c++) {
         cells.push({ row: r, col: c });
       }
     }
 
     const shuffledCells = [...cells].sort(() => Math.random() - 0.5);
 
-    const generated = tools.map((_, index) => {
-      const cell = shuffledCells[index];
+    const generated = activeTools.map((_, index) => {
+      const cell = shuffledCells[index] || { row: index % numRows, col: Math.floor(index / numRows) };
 
-      const baseLeft = 5 + cell.col * 18;
+      const colSpacing = 80 / Math.max(1, numCols - 1);
+      const rowSpacing = 75 / Math.max(1, numRows - 1);
+
+      const baseLeft = 5 + cell.col * colSpacing;
       const leftOffset = Math.random() * 6 - 3;
       const left = Math.max(2, Math.min(90, baseLeft + leftOffset));
 
-      const baseTop = 5 + cell.row * 22;
+      const baseTop = 5 + cell.row * rowSpacing;
       const topOffset = Math.random() * 6 - 3;
-      const top = Math.max(2, Math.min(90, baseTop + topOffset));
+      const top = Math.max(2, Math.min(88, baseTop + topOffset));
 
       const rotate = -20 + Math.random() * 40;
       return { left, top, rotate };
     });
     setPositions(generated);
-  }, []);
+  }, [activeTools]);
 
   useEffect(() => {
     if (revealed && positions.length > 0 && !mounted) {
@@ -363,24 +432,24 @@ export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUse
 
   const desktopCards = useMemo(() => {
     if (!mounted || positions.length === 0) return null;
-    return tools.map((tool, index) => (
+    return activeTools.map((tool, index) => (
       <ToolCard
         key={tool.id}
         tool={tool}
-        pos={positions[index]}
+        pos={positions[index] || { left: 10, top: 10, rotate: 0 }}
         constraintsRef={constraintsRef}
         enableHover={enableHover}
       />
     ));
-  }, [mounted, positions, constraintsRef, enableHover]);
+  }, [mounted, positions, constraintsRef, enableHover, activeTools]);
 
   const mobileRows = useMemo(() => {
-    const rows: (typeof tools)[] = [];
-    for (let i = 0; i < tools.length; i += itemsPerRow) {
-      rows.push(tools.slice(i, i + itemsPerRow));
+    const rows: ToolItem[][] = [];
+    for (let i = 0; i < activeTools.length; i += itemsPerRow) {
+      rows.push(activeTools.slice(i, i + itemsPerRow));
     }
     return rows;
-  }, [itemsPerRow]);
+  }, [itemsPerRow, activeTools]);
 
   return (
     <section className="mt-32 w-full flex flex-col items-center">
@@ -420,4 +489,4 @@ export default function ToolsIUse({ constraintsRef, revealed = true }: ToolsIUse
       )}
     </section>
   );
-}
+}

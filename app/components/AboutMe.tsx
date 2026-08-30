@@ -1,6 +1,7 @@
 "use client";
 
-// import Title from './Title';
+import { ProfileData } from '@/app/types/sanity';
+import { fallbackHighlights } from '@/app/lib/fallback-data';
 
 const BriefcaseIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -23,7 +24,47 @@ const SendIcon = () => (
   </svg>
 );
 
-export default function AboutMe() {
+const SparklesIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+  </svg>
+);
+
+const highlightIconsMap: Record<string, React.ReactNode> = {
+  briefcase: <BriefcaseIcon />,
+  'map-pin': <MapPinIcon />,
+  send: <SendIcon />,
+  sparkles: <SparklesIcon />,
+};
+
+interface AboutMeProps {
+  profile?: ProfileData | null;
+}
+
+export default function AboutMe({ profile }: AboutMeProps) {
+  const headline = profile?.aboutHeadline || "Design is how I solve problems and create impact.";
+  const bio = profile?.aboutBio || "I'm a multidisciplinary designer who loves crafting meaningful and functional digital experiences. With a keen eye for detail and a passion for design, I help brands and products connect with their audience.";
+  
+  const defaultHighlightsList = fallbackHighlights.map((h) => ({
+    icon: highlightIconsMap[h.iconName] || <BriefcaseIcon />,
+    label: h.label,
+  }));
+
+  const highlights = profile?.highlights && profile.highlights.length > 0
+    ? profile.highlights.map((h, i) => {
+        let iconNode = h.icon ? highlightIconsMap[h.icon] : null;
+        if (!iconNode) {
+          if (i === 0) iconNode = <BriefcaseIcon />;
+          else if (i === 1) iconNode = <MapPinIcon />;
+          else iconNode = <SendIcon />;
+        }
+        return {
+          icon: iconNode,
+          label: h.label,
+        };
+      })
+    : defaultHighlightsList;
+
   return (
     <section className="mt-32 w-full">
       <div className="w-full bg-page rounded-3xl p-8 sm:p-10 md:p-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-12 md:gap-16">
@@ -32,10 +73,10 @@ export default function AboutMe() {
             About Me
           </span>
           <h2 className="text-[32px] sm:text-[40px] md:text-[30px] font-bold leading-tight text-brand-primary mt-4">
-            Design is how I solve problems and create impact.
+            {headline}
           </h2>
           <p className="text-[15px] md:text-[16px] leading-6.5 md:leading-7 text-brand-secondary mt-6 font-medium">
-            I'm a multidisciplinary designer who loves crafting meaningful and functional digital experiences. With a keen eye for detail and a passion for design, I help brands and products connect with their audience.
+            {bio}
           </p>
 
           <a
@@ -58,47 +99,38 @@ export default function AboutMe() {
 
         <div className="w-full md:w-auto md:min-w-90 flex justify-start md:justify-end">
           <div className="flex gap-4">
-
             <div className="flex flex-col items-center" style={{ width: 14 }}>
-              <div style={{ paddingTop: 12, paddingBottom: 12 }}>
-                <BriefcaseIcon />
-              </div>
-              <svg width="2" height="14" style={{ display: 'block', overflow: 'visible' }}>
-                <line x1="1" y1="0" x2="1" y2="14" stroke="currentColor" strokeWidth="1" strokeOpacity="0.25" />
-              </svg>
-              <div style={{ paddingTop: 12, paddingBottom: 12 }}>
-                <MapPinIcon />
-              </div>
-              <svg width="2" height="14" style={{ display: 'block', overflow: 'visible' }}>
-                <line x1="1" y1="0" x2="1" y2="14" stroke="currentColor" strokeWidth="1" strokeOpacity="0.25" />
-              </svg>
-              <div style={{ paddingTop: 12, paddingBottom: 12 }}>
-                <SendIcon />
-              </div>
+              {highlights.map((item, index) => (
+                <div key={index} className="flex flex-col items-center">
+                  <div style={{ paddingTop: 12, paddingBottom: 12 }}>
+                    {item.icon}
+                  </div>
+                  {index < highlights.length - 1 && (
+                    <svg width="2" height="14" style={{ display: 'block', overflow: 'visible' }}>
+                      <line x1="1" y1="0" x2="1" y2="14" stroke="currentColor" strokeWidth="1" strokeOpacity="0.25" />
+                    </svg>
+                  )}
+                </div>
+              ))}
             </div>
 
             <div className="flex flex-col">
-              <span className="flex items-center text-[13px] md:text-[14px] font-semibold text-brand-primary"
-                style={{ height: 18 + 24, minHeight: 18 + 24 }}>
-                5+ Years of Experience
-              </span>
-              <div style={{ height: 14 }} />
-              <span className="flex items-center text-[13px] md:text-[14px] font-semibold text-brand-primary"
-                style={{ height: 18 + 24, minHeight: 18 + 24 }}>
-                Based in Indonesia
-              </span>
-              <div style={{ height: 14 }} />
-              <span className="flex items-center text-[13px] md:text-[14px] font-semibold text-brand-primary"
-                style={{ height: 18 + 24, minHeight: 18 + 24 }}>
-                Open to freelance & collaborations
-              </span>
+              {highlights.map((item, index) => (
+                <div key={index} className="flex flex-col">
+                  <span
+                    className="flex items-center text-[13px] md:text-[14px] font-semibold text-brand-primary"
+                    style={{ height: 18 + 24, minHeight: 18 + 24 }}
+                  >
+                    {item.label}
+                  </span>
+                  {index < highlights.length - 1 && <div style={{ height: 14 }} />}
+                </div>
+              ))}
             </div>
-
           </div>
         </div>
-
-
       </div>
     </section>
   );
 }
+

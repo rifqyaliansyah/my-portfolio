@@ -1,64 +1,118 @@
 import Image from "next/image";
 import ImageStack from "./ImageStack";
 import Testimonials from "./Testimonials";
+import { ProfileData, TestimonialData } from "@/app/types/sanity";
+import { urlFor } from "@/app/lib/sanity";
+import { fallbackSkills } from "@/app/lib/fallback-data";
 
-const skills = [
-  {
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="16 18 22 12 16 6" />
-        <polyline points="8 6 2 12 8 18" />
-        <line x1="14" y1="4" x2="10" y2="20" />
-      </svg>
-    ),
-    label: "React / Next.js",
-  },
-  {
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5Z" />
-        <path d="M2 17l10 5 10-5" />
-        <path d="M2 12l10 5 10-5" />
-      </svg>
-    ),
-    label: "TypeScript",
-  },
-  {
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M5 5.5A3.5 3.5 0 0 1 8.5 2H12v7H8.5A3.5 3.5 0 0 1 5 5.5z" />
-        <path d="M12 2h3.5a3.5 3.5 0 1 1 0 7H12V2z" />
-        <path d="M12 12.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 1 1-7 0z" />
-        <path d="M5 19.5A3.5 3.5 0 0 1 8.5 16H12v3.5a3.5 3.5 0 1 1-7 0z" />
-        <path d="M5 12.5A3.5 3.5 0 0 1 8.5 9H12v7H8.5A3.5 3.5 0 0 1 5 12.5z" />
-      </svg>
-    ),
-    label: "Figma",
-  },
-  {
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-        <polyline points="3.29 7 12 12 20.71 7" />
-        <line x1="12" y1="22" x2="12" y2="12" />
-      </svg>
-    ),
-    label: "Node.js",
-  },
-  {
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="3" width="7" height="7" rx="1" />
-        <rect x="14" y="3" width="7" height="7" rx="1" />
-        <rect x="3" y="14" width="7" height="7" rx="1" />
-        <rect x="14" y="14" width="7" height="7" rx="1" />
-      </svg>
-    ),
-    label: "Tailwind CSS",
-  },
-];
+const skillIcons: Record<string, React.ReactNode> = {
+  "React / Next.js": (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+      <line x1="14" y1="4" x2="10" y2="20" />
+    </svg>
+  ),
+  TypeScript: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2L2 7l10 5 10-5-10-5Z" />
+      <path d="M2 17l10 5 10-5" />
+      <path d="M2 12l10 5 10-5" />
+    </svg>
+  ),
+  Figma: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 5.5A3.5 3.5 0 0 1 8.5 2H12v7H8.5A3.5 3.5 0 0 1 5 5.5z" />
+      <path d="M12 2h3.5a3.5 3.5 0 1 1 0 7H12V2z" />
+      <path d="M12 12.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 1 1-7 0z" />
+      <path d="M5 19.5A3.5 3.5 0 0 1 8.5 16H12v3.5a3.5 3.5 0 1 1-7 0z" />
+      <path d="M5 12.5A3.5 3.5 0 0 1 8.5 9H12v7H8.5A3.5 3.5 0 0 1 5 12.5z" />
+    </svg>
+  ),
+  "Node.js": (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+      <polyline points="3.29 7 12 12 20.71 7" />
+      <line x1="12" y1="22" x2="12" y2="12" />
+    </svg>
+  ),
+  "Tailwind CSS": (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <rect x="14" y="14" width="7" height="7" rx="1" />
+    </svg>
+  ),
+};
 
-export default function Hero() {
+const defaultSkillIcon = (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+    <line x1="14" y1="4" x2="10" y2="20" />
+  </svg>
+);
+
+interface HeroProps {
+  profile?: ProfileData | null;
+  testimonials?: TestimonialData[];
+}
+
+export default function Hero({ profile, testimonials }: HeroProps) {
+  const name = profile?.name || "Rifqy Aliansyah";
+  const avatarUrl = profile?.avatar ? urlFor(profile.avatar).width(140).height(140).url() : "/profile.png";
+  const skillsList = profile?.quickSkills && profile.quickSkills.length > 0 ? profile.quickSkills : fallbackSkills;
+
+  const headline = profile?.headline;
+
+  const renderHeadline = () => {
+    if (!headline) {
+      return (
+        <>
+          Design Engineer who ships products,
+          <br />
+          not just mockups. Part of
+          <br />
+          <span className="text-brand-secondary">Google Indonesia</span>
+        </>
+      );
+    }
+
+    // If headline contains "Part of", format it nicely with the colored span and proper line breaks
+    if (headline.includes("Part of")) {
+      const [beforePart, afterPart] = headline.split("Part of");
+      const trimmedBefore = beforePart.trim();
+      
+      if (trimmedBefore.includes(",")) {
+        const commaIndex = trimmedBefore.indexOf(",");
+        const firstLine = trimmedBefore.substring(0, commaIndex + 1);
+        const secondLine = trimmedBefore.substring(commaIndex + 1).trim();
+
+        return (
+          <>
+            {firstLine}
+            <br />
+            {secondLine} Part of
+            <br />
+            <span className="text-brand-secondary">{afterPart.trim()}</span>
+          </>
+        );
+      }
+
+      return (
+        <>
+          {trimmedBefore} Part of
+          <br />
+          <span className="text-brand-secondary">{afterPart.trim()}</span>
+        </>
+      );
+    }
+
+    return headline;
+  };
+
+
   return (
     <section className="flex flex-col md:flex-row items-start justify-between mt-10 md:mt-16 gap-8 md:gap-12">
       <div className="flex flex-col items-start w-full md:w-auto min-w-0">
@@ -73,8 +127,8 @@ export default function Hero() {
             }}
           >
             <Image
-              src="/profile.png"
-              alt="Rifqy Aliansyah"
+              src={avatarUrl}
+              alt={name}
               width={70}
               height={70}
               className="rounded-xl object-cover"
@@ -84,18 +138,14 @@ export default function Hero() {
           </div>
 
           <h1 className="text-[24px] sm:text-[28px] md:text-[32px] font-semibold text-brand-primary leading-tight">
-            Rifqy Aliansyah
+            {name}
           </h1>
         </div>
 
         <p
           className="mt-5 md:mt-6 text-[18px] sm:text-[20px] md:text-[24px] leading-6.5 sm:leading-7 md:leading-8 font-medium text-brand-primary text-left"
         >
-          Design Engineer who ships products,
-          <br />
-          not just mockups. Part of
-          <br />
-          <span className="text-brand-secondary">Google Indonesia</span>
+          {renderHeadline()}
         </p>
 
         <a
@@ -119,9 +169,9 @@ export default function Hero() {
         </a>
 
         <div className="mt-6 md:mt-8 flex flex-wrap gap-2.5 md:gap-3 items-start w-full md:max-w-104.25">
-          {skills.map((skill) => (
+          {skillsList.map((skill) => (
             <div
-              key={skill.label}
+              key={skill}
               className="skill-badge flex items-center rounded-full cursor-default select-none text-brand-secondary"
               style={{
                 width: 129,
@@ -136,20 +186,21 @@ export default function Hero() {
                 lineHeight: "32px",
               }}
             >
-              {skill.icon}
-              <span>{skill.label}</span>
+              {skillIcons[skill] || defaultSkillIcon}
+              <span className="truncate">{skill}</span>
             </div>
           ))}
         </div>
 
         <div className="mt-10 md:mt-14 w-full">
-          <Testimonials />
+          <Testimonials items={testimonials} />
         </div>
       </div>
 
       <div className="hidden md:block">
-        <ImageStack />
+        <ImageStack previewImages={profile?.heroPreviewImages} />
       </div>
     </section>
   );
 }
+

@@ -1,5 +1,8 @@
 import Title from './Title';
 import Card from './Card';
+import { ProjectData } from '@/app/types/sanity';
+import { urlFor } from '@/app/lib/sanity';
+import { fallbackProjects } from '@/app/lib/fallback-data';
 
 const ArrowIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -8,40 +11,21 @@ const ArrowIcon = () => (
   </svg>
 );
 
-const projectsData = [
-  {
-    id: 1,
-    imageSrc: '/example.jpg',
-    title: 'E-commerce Redesign',
-    description: 'A complete overhaul of the user experience for a leading e-commerce platform.',
-  },
-  {
-    id: 2,
-    imageSrc: '/example.jpg',
-    title: 'Fintech Mobile App',
-    description: 'Designing a seamless banking experience for the new generation.',
-  },
-  {
-    id: 3,
-    imageSrc: '/example.jpg',
-    title: 'Healthcare Dashboard',
-    description: 'Simplifying complex medical data into intuitive visual interfaces.',
-  },
-  {
-    id: 4,
-    imageSrc: '/example.jpg',
-    title: 'Real Estate Platform',
-    description: 'Connecting buyers and sellers through an immersive property search.',
-  },
-  {
-    id: 5,
-    imageSrc: '/example.jpg',
-    title: 'Travel Booking Site',
-    description: 'A sleek and modern interface for booking flights and accommodations.',
-  },
-];
+interface ProjectsProps {
+  projects?: ProjectData[];
+}
 
-export default function Projects() {
+export default function Projects({ projects }: ProjectsProps) {
+  const list = projects && projects.length > 0
+    ? projects.map((p, i) => ({
+      id: p._id || `${i + 1}`,
+      imageSrc: p.coverImage ? urlFor(p.coverImage).width(608).height(400).auto('format').url() : '/example.jpg',
+      title: p.title,
+      description: p.description,
+      href: p.projectUrl || (p.slug?.current ? `/projects/${p.slug.current}` : '#projects'),
+    }))
+    : fallbackProjects;
+
   return (
     <section className="mt-32 w-full flex flex-col">
       <Title 
@@ -52,15 +36,17 @@ export default function Projects() {
       />
       
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projectsData.slice(0, 5).map((project) => (
+        {list.slice(0, 5).map((project) => (
           <Card 
             key={project.id}
             imageSrc={project.imageSrc}
             title={project.title}
             description={project.description}
+            href={project.href}
           />
         ))}
       </div>
     </section>
   );
 }
+

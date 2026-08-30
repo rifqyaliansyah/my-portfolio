@@ -1,5 +1,8 @@
 import Title from './Title';
 import Card from './Card';
+import { WritingData } from '@/app/types/sanity';
+import { urlFor } from '@/app/lib/sanity';
+import { fallbackWritings } from '@/app/lib/fallback-data';
 
 const ArrowIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -8,28 +11,21 @@ const ArrowIcon = () => (
   </svg>
 );
 
-const writingData = [
-  {
-    id: 1,
-    imageSrc: '/example.jpg',
-    title: 'The Future of UI Design in 2024',
-    description: 'Exploring upcoming trends in user interface design and how to prepare for them.',
-  },
-  {
-    id: 2,
-    imageSrc: '/example.jpg',
-    title: 'Building Accessible Web Applications',
-    description: 'A comprehensive guide to ensuring your web apps are usable by everyone.',
-  },
-  {
-    id: 3,
-    imageSrc: '/example.jpg',
-    title: 'Mastering Micro-interactions',
-    description: 'How small animations can make a huge impact on user experience.',
-  },
-];
+interface WritingProps {
+  writings?: WritingData[];
+}
 
-export default function Writing() {
+export default function Writing({ writings }: WritingProps) {
+  const list = writings && writings.length > 0
+    ? writings.map((w, i) => ({
+      id: w._id || `${i + 1}`,
+      imageSrc: w.coverImage ? urlFor(w.coverImage).width(608).height(400).auto('format').url() : '/example.jpg',
+      title: w.title,
+      description: w.excerpt || w.description || '',
+      href: w.externalUrl || (w.slug?.current ? `/writing/${w.slug.current}` : '#writing'),
+    }))
+    : fallbackWritings;
+
   return (
     <section className="mt-32 w-full flex flex-col">
       <Title 
@@ -40,15 +36,17 @@ export default function Writing() {
       />
       
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {writingData.slice(0, 3).map((article) => (
+        {list.slice(0, 3).map((article) => (
           <Card 
             key={article.id}
             imageSrc={article.imageSrc}
             title={article.title}
             description={article.description}
+            href={article.href}
           />
         ))}
       </div>
     </section>
   );
 }
+

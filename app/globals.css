@@ -80,30 +80,6 @@ body {
   min-height: 100vh;
 }
 
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-::view-transition-old(root) {
-  z-index: 1;
-}
-
-::view-transition-new(root) {
-  z-index: 9999;
-  animation: 600ms cubic-bezier(0.4, 0, 0.2, 1) both ripple-reveal;
-}
-
-@keyframes ripple-reveal {
-  from {
-    clip-path: circle(0% at var(--ripple-x, 0px) var(--ripple-y, 0px));
-  }
-  to {
-    clip-path: circle(150% at var(--ripple-x, 0px) var(--ripple-y, 0px));
-  }
-}
-
 .scrollbar-auto {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
