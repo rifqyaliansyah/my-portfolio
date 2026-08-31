@@ -7,10 +7,17 @@ export interface SanityImage {
   alt?: string
 }
 
+export interface QuickSkillItem {
+  _key?: string
+  name: string
+  icon?: SanityImage
+}
+
 export interface SocialLink {
   _key?: string
   platform: 'x' | 'instagram' | 'threads' | 'linkedin' | 'youtube' | 'github' | string
   url: string
+  customIcon?: SanityImage
 }
 
 export interface ProfileHighlight {
@@ -24,7 +31,7 @@ export interface ProfileData {
   name: string
   headline: string
   avatar?: SanityImage
-  quickSkills: string[]
+  quickSkills?: (QuickSkillItem | string)[]
   heroPreviewImages?: SanityImage[]
   aboutHeadline?: string
   aboutBio?: string

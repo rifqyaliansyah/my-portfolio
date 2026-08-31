@@ -31,33 +31,33 @@ const SHADOW_HIDDEN = "0 8px 24px rgba(0, 0, 0, 0)";
 
 function CardContent({ testimonial }: { testimonial: TestimonialItem }) {
     return (
-        <div className="flex h-full flex-col justify-between" style={{ width: CONTENT_WIDTH }}>
+        <div className="flex h-full w-full flex-col justify-between">
             <p
                 className="text-left"
-                style={{ fontSize: 12, fontWeight: 600, lineHeight: "20px", color: "var(--secondary-color)" }}
+                style={{ fontSize: 13, fontWeight: 500, lineHeight: "20px", color: "var(--secondary-color)" }}
             >
                 {testimonial.quote}
             </p>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5 mt-4">
                 <div
                     className="flex items-center justify-center rounded-lg shrink-0"
-                    style={{ width: 28, height: 28, backgroundColor: "var(--surface-color)" }}
+                    style={{ width: 32, height: 32, backgroundColor: "var(--surface-color)" }}
                 >
                     <Image
                         src={testimonial.avatar}
                         alt={testimonial.name}
-                        width={24}
-                        height={24}
+                        width={28}
+                        height={28}
                         className="rounded-md object-cover"
-                        style={{ width: 24, height: 24 }}
+                        style={{ width: 28, height: 28 }}
                     />
                 </div>
                 <div className="flex flex-col">
-                    <span style={{ fontSize: 12, fontWeight: 600, lineHeight: "16px", color: "var(--primary-color)" }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, lineHeight: "18px", color: "var(--primary-color)" }}>
                         {testimonial.name}
                     </span>
-                    <span style={{ fontSize: 8, fontWeight: 500, lineHeight: "12px", color: "var(--secondary-color)" }}>
+                    <span style={{ fontSize: 10, fontWeight: 500, lineHeight: "14px", color: "var(--secondary-color)" }}>
                         {testimonial.role}
                     </span>
                 </div>
@@ -85,26 +85,6 @@ export default function Testimonials({ items }: TestimonialsProps) {
     const [nextIndex, setNextIndex] = useState(list.length > 1 ? 1 : 0);
     const [isAnimating, setIsAnimating] = useState(false);
     const [instant, setInstant] = useState(false);
-
-    const wrapperRef = useRef<HTMLDivElement>(null);
-    const [scale, setScale] = useState(1);
-
-    useEffect(() => {
-        const el = wrapperRef.current;
-        if (!el) return;
-
-        const updateScale = () => {
-            const width = el.offsetWidth;
-            if (width > 0) {
-                setScale(Math.min(1, width / FRONT_WIDTH));
-            }
-        };
-
-        updateScale();
-        const observer = new ResizeObserver(updateScale);
-        observer.observe(el);
-        return () => observer.disconnect();
-    }, []);
 
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -165,70 +145,58 @@ export default function Testimonials({ items }: TestimonialsProps) {
     const backTransitionStyle = baseTransition;
 
     return (
-        <div className="flex flex-col items-center w-full">
-            <div ref={wrapperRef} className="w-full flex justify-center" style={{ maxWidth: FRONT_WIDTH }}>
+        <div className="flex flex-col items-start w-full">
+            <div className="w-full relative" style={{ maxWidth: FRONT_WIDTH, height: STAGE_HEIGHT }}>
+                {/* Back card */}
                 <div
+                    className="absolute rounded-xl overflow-hidden"
                     style={{
-                        position: "relative",
-                        width: FRONT_WIDTH * scale,
-                        height: STAGE_HEIGHT * scale,
+                        top: BACK_OFFSET_TOP,
+                        left: isAnimating ? "0%" : "3%",
+                        right: isAnimating ? "0%" : "3%",
+                        height: CARD_HEIGHT,
+                        padding: CARD_PADDING,
+                        backgroundColor: "var(--bg-container)",
+                        border: isAnimating
+                            ? "1px solid var(--border-container-color)"
+                            : "1px solid transparent",
+                        boxShadow: isAnimating ? SHADOW_HIDDEN : SHADOW_VISIBLE,
+                        transform: isAnimating
+                            ? `translateY(${-BACK_OFFSET_TOP}px)`
+                            : "translateY(0px)",
+                        transition: backTransitionStyle,
+                        zIndex: 1,
                     }}
                 >
-                    <div
-                        className="relative"
-                        style={{
-                            width: FRONT_WIDTH,
-                            height: STAGE_HEIGHT,
-                            transform: `scale(${scale})`,
-                            transformOrigin: "top left",
-                        }}
-                    >
-                        <div
-                            className="absolute rounded-xl overflow-hidden"
-                            style={{
-                                top: BACK_OFFSET_TOP,
-                                left: BACK_OFFSET_LEFT,
-                                width: isAnimating ? FRONT_WIDTH : BACK_WIDTH,
-                                height: CARD_HEIGHT,
-                                padding: CARD_PADDING,
-                                backgroundColor: "var(--bg-container)",
-                                border: isAnimating
-                                    ? "1px solid var(--border-container-color)"
-                                    : "1px solid transparent",
-                                boxShadow: isAnimating ? SHADOW_HIDDEN : SHADOW_VISIBLE,
-                                transform: isAnimating
-                                    ? `translate(${-BACK_OFFSET_LEFT}px, ${-BACK_OFFSET_TOP}px)`
-                                    : "translate(0px, 0px)",
-                                transition: backTransitionStyle,
-                                zIndex: 1,
-                            }}
-                        >
-                            <CardContent testimonial={back} />
-                        </div>
+                    <CardContent testimonial={back} />
+                </div>
 
-                        <div
-                            className="absolute rounded-xl"
-                            style={{
-                                top: 0,
-                                left: 0,
-                                width: FRONT_WIDTH,
-                                height: CARD_HEIGHT,
-                                padding: CARD_PADDING,
-                                backgroundColor: "var(--bg-container)",
-                                border: "1px solid var(--border-container-color)",
-                                transform: isAnimating ? "translateY(-24px)" : "translateY(0px)",
-                                opacity: isAnimating ? 0 : 1,
-                                transition: frontTransitionStyle,
-                                zIndex: 2,
-                            }}
-                        >
-                            <CardContent testimonial={front} />
-                        </div>
-                    </div>
+                {/* Front card */}
+                <div
+                    className="absolute w-full rounded-xl"
+                    style={{
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: CARD_HEIGHT,
+                        padding: CARD_PADDING,
+                        backgroundColor: "var(--bg-container)",
+                        border: "1px solid var(--border-container-color)",
+                        transform: isAnimating ? "translateY(-24px)" : "translateY(0px)",
+                        opacity: isAnimating ? 0 : 1,
+                        transition: frontTransitionStyle,
+                        zIndex: 2,
+                    }}
+                >
+                    <CardContent testimonial={front} />
                 </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-1.5 justify-center">
+            {/* Dots pagination centered relative to the card */}
+            <div
+                className="mt-4 flex items-center gap-1.5 justify-center w-full"
+                style={{ maxWidth: FRONT_WIDTH }}
+            >
                 {list.map((t, index) => {
                     const active = index === activeDot;
                     return (

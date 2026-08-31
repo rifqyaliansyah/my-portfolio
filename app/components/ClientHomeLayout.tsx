@@ -48,7 +48,7 @@ export default function ClientHomeLayout({ data }: ClientHomeLayoutProps) {
     <div className="min-h-screen bg-page md:px-6 flex flex-col justify-start">
       <main
         ref={mainRef}
-        className="w-full max-w-280 mx-auto my-0 md:my-16 bg-container rounded-none md:rounded-[64px] border border-brand-border-container p-6 sm:p-12 md:p-20 flex flex-col transition-all duration-300 relative overflow-hidden"
+        className="w-full max-w-280 mx-auto my-0 md:my-8 lg:my-16 bg-container rounded-none md:rounded-[48px] lg:rounded-[64px] border border-brand-border-container p-6 sm:p-10 md:p-12 lg:p-20 flex flex-col transition-all duration-300 relative overflow-hidden"
       >
         <Header />
 

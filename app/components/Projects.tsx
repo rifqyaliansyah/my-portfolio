@@ -27,7 +27,7 @@ export default function Projects({ projects }: ProjectsProps) {
     : fallbackProjects;
 
   return (
-    <section className="mt-32 w-full flex flex-col">
+    <section id="projects" className="mt-32 w-full flex flex-col">
       <Title 
         title="Featured Projects" 
         href="#projects" 

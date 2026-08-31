@@ -1,3 +1,5 @@
+export const fallbackEmail = "rifqyaliansyah@gmail.com";
+
 export const fallbackSkills = [
   "React / Next.js",
   "TypeScript",

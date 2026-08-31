@@ -1,7 +1,7 @@
-"use client";
-
+import Image from "next/image";
 import { ProfileData } from "@/app/types/sanity";
 import { defaultSocialLinks } from "@/app/lib/fallback-data";
+import { urlFor } from "@/app/lib/sanity";
 
 const XIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -42,8 +42,16 @@ const GitHubIcon = () => (
   </svg>
 );
 
+const defaultLinkIcon = (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+  </svg>
+);
+
 const socialIconsMap: Record<string, { icon: React.ReactNode; label: string }> = {
   x: { icon: <XIcon />, label: "X (Twitter)" },
+  twitter: { icon: <XIcon />, label: "X (Twitter)" },
   instagram: { icon: <InstagramIcon />, label: "Instagram" },
   threads: { icon: <ThreadsIcon />, label: "Threads" },
   linkedin: { icon: <LinkedInIcon />, label: "LinkedIn" },
@@ -52,7 +60,7 @@ const socialIconsMap: Record<string, { icon: React.ReactNode; label: string }> =
 };
 
 const defaultSocialLinksMapped = defaultSocialLinks.map((item) => ({
-  icon: socialIconsMap[item.platform]?.icon || <XIcon />,
+  icon: socialIconsMap[item.platform]?.icon || defaultLinkIcon,
   href: item.href,
   label: item.label,
 }));
@@ -64,19 +72,34 @@ interface FooterProps {
 export default function Footer({ profile }: FooterProps) {
   const socialLinks = profile?.socialLinks && profile.socialLinks.length > 0
     ? profile.socialLinks
-        .filter((l) => l.url && l.platform !== "github")
-        .map((l) => {
-          const matched = socialIconsMap[l.platform?.toLowerCase()] || {
-            icon: <XIcon />,
-            label: l.platform,
-          };
+        .filter((l) => l.url)
+        .map((l, index) => {
+          const platformKey = l.platform ? l.platform.toLowerCase() : `social-${index}`;
+          const matched = socialIconsMap[platformKey];
+          
+          let iconNode: React.ReactNode;
+          if (l.customIcon) {
+            iconNode = (
+              <Image
+                src={urlFor(l.customIcon).width(36).height(36).url()}
+                alt={l.platform || 'Social'}
+                width={18}
+                height={18}
+                className="w-4.5 h-4.5 object-contain"
+              />
+            );
+          } else {
+            iconNode = matched?.icon || defaultLinkIcon;
+          }
+
           return {
-            icon: matched.icon,
+            key: l._key || `${platformKey}-${index}`,
+            icon: iconNode,
             href: l.url,
-            label: matched.label,
+            label: matched?.label || l.platform || 'Social Link',
           };
         })
-    : defaultSocialLinksMapped;
+    : defaultSocialLinksMapped.map((l, i) => ({ ...l, key: `${l.label}-${i}` }));
 
   const currentYear = new Date().getFullYear();
   const name = profile?.name || "Rifqy Aliansyah";
@@ -93,7 +116,7 @@ export default function Footer({ profile }: FooterProps) {
         <div className="flex items-center gap-5">
           {socialLinks.map((link) => (
             <a
-              key={link.label}
+              key={link.key}
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"

@@ -27,7 +27,7 @@ export default function Writing({ writings }: WritingProps) {
     : fallbackWritings;
 
   return (
-    <section className="mt-32 w-full flex flex-col">
+    <section id="writing" className="mt-32 w-full flex flex-col">
       <Title 
         title="Writing" 
         href="#writing" 

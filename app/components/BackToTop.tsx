@@ -41,7 +41,7 @@ export default function BackToTop() {
           exit={{ opacity: 0, scale: 0.8, y: 10 }}
           onClick={scrollToTop}
           aria-label="Back to top"
-          className="fixed bottom-6 right-6 z-50 flex items-center justify-center rounded-full border border-brand-border-toggle bg-container text-brand-primary shadow-lg cursor-pointer hover:opacity-90 active:scale-95 transition-all duration-200"
+          className="fixed bottom-6 right-6 z-30 flex items-center justify-center rounded-full border border-brand-border-toggle bg-container text-brand-primary shadow-lg cursor-pointer hover:opacity-90 active:scale-95 transition-all duration-200"
           style={{
             width: 44,
             height: 44,

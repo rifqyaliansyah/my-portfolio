@@ -4,14 +4,23 @@ export const PROFILE_QUERY = `
     name,
     headline,
     avatar,
-    quickSkills,
+    quickSkills[] {
+      _key,
+      name,
+      icon
+    },
     heroPreviewImages,
     aboutHeadline,
     aboutBio,
     highlights,
     email,
     githubUsername,
-    socialLinks
+    socialLinks[] {
+      _key,
+      platform,
+      url,
+      customIcon
+    }
   }
 `
 
@@ -111,14 +120,23 @@ export const LANDING_PAGE_QUERY = `
     name,
     headline,
     avatar,
-    quickSkills,
+    quickSkills[] {
+      _key,
+      name,
+      icon
+    },
     heroPreviewImages,
     aboutHeadline,
     aboutBio,
     highlights,
     email,
     githubUsername,
-    socialLinks
+    socialLinks[] {
+      _key,
+      platform,
+      url,
+      customIcon
+    }
   },
   "featuredProjects": *[_type == "project" && isFeatured == true] | order(order asc) {
     _id,

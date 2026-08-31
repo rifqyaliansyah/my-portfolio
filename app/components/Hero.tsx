@@ -1,9 +1,9 @@
 import Image from "next/image";
 import ImageStack from "./ImageStack";
 import Testimonials from "./Testimonials";
-import { ProfileData, TestimonialData } from "@/app/types/sanity";
+import { ProfileData, TestimonialData, QuickSkillItem } from "@/app/types/sanity";
 import { urlFor } from "@/app/lib/sanity";
-import { fallbackSkills } from "@/app/lib/fallback-data";
+import { fallbackSkills, fallbackEmail } from "@/app/lib/fallback-data";
 
 const skillIcons: Record<string, React.ReactNode> = {
   "React / Next.js": (
@@ -62,7 +62,25 @@ interface HeroProps {
 export default function Hero({ profile, testimonials }: HeroProps) {
   const name = profile?.name || "Rifqy Aliansyah";
   const avatarUrl = profile?.avatar ? urlFor(profile.avatar).width(140).height(140).url() : "/profile.png";
-  const skillsList = profile?.quickSkills && profile.quickSkills.length > 0 ? profile.quickSkills : fallbackSkills;
+  const email = profile?.email || fallbackEmail;
+
+  // Normalize quickSkills items (handles both string and QuickSkillItem object)
+  const rawSkills = profile?.quickSkills && profile.quickSkills.length > 0 ? profile.quickSkills : fallbackSkills;
+  const skillsList: QuickSkillItem[] = rawSkills
+    .filter(Boolean)
+    .map((s, i) => {
+      if (typeof s === "string") {
+        return { _key: `${i}`, name: s };
+      }
+      if (typeof s === "object" && s !== null) {
+        return {
+          _key: s._key || `${i}`,
+          name: s.name || "Skill",
+          icon: s.icon,
+        };
+      }
+      return { _key: `${i}`, name: String(s) };
+    });
 
   const headline = profile?.headline;
 
@@ -112,10 +130,9 @@ export default function Hero({ profile, testimonials }: HeroProps) {
     return headline;
   };
 
-
   return (
-    <section className="flex flex-col md:flex-row items-start justify-between mt-10 md:mt-16 gap-8 md:gap-12">
-      <div className="flex flex-col items-start w-full md:w-auto min-w-0">
+    <section className="flex flex-col lg:flex-row items-start justify-between mt-10 md:mt-16 gap-8 md:gap-12">
+      <div className="flex flex-col items-start w-full lg:w-auto min-w-0 flex-1">
         <div className="flex items-center gap-4 sm:gap-6">
           <div
             className="flex items-center justify-center rounded-xl shrink-0"
@@ -149,7 +166,7 @@ export default function Hero({ profile, testimonials }: HeroProps) {
         </p>
 
         <a
-          href="#contact"
+          href={`mailto:${email}`}
           className="mt-5 md:mt-6 inline-flex items-center justify-center gap-2 rounded-full font-semibold select-none hover:opacity-90 transition-opacity"
           style={{
             width: 156,
@@ -169,27 +186,38 @@ export default function Hero({ profile, testimonials }: HeroProps) {
         </a>
 
         <div className="mt-6 md:mt-8 flex flex-wrap gap-2.5 md:gap-3 items-start w-full md:max-w-104.25">
-          {skillsList.map((skill) => (
-            <div
-              key={skill}
-              className="skill-badge flex items-center rounded-full cursor-default select-none text-brand-secondary"
-              style={{
-                width: 129,
-                height: 33,
-                gap: 12,
-                paddingLeft: 14,
-                paddingRight: 14,
-                border: "1px solid rgba(74, 74, 74, 0.1)",
-                boxShadow: "0 1px 4px rgba(0, 0, 0, 0.04)",
-                fontSize: 10,
-                fontWeight: 600,
-                lineHeight: "32px",
-              }}
-            >
-              {skillIcons[skill] || defaultSkillIcon}
-              <span className="truncate">{skill}</span>
-            </div>
-          ))}
+          {skillsList.map((skill, index) => {
+            const skillName = skill.name;
+            const customIconUrl = skill.icon ? urlFor(skill.icon).width(28).height(28).url() : null;
+
+            return (
+              <div
+                key={skill._key || `${skillName}-${index}`}
+                className="skill-badge inline-flex items-center rounded-full cursor-default select-none text-brand-secondary gap-2 px-3.5 py-1"
+                style={{
+                  minHeight: 33,
+                  border: "1px solid rgba(74, 74, 74, 0.1)",
+                  boxShadow: "0 1px 4px rgba(0, 0, 0, 0.04)",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  lineHeight: "24px",
+                }}
+              >
+                {customIconUrl ? (
+                  <Image
+                    src={customIconUrl}
+                    alt={skillName}
+                    width={14}
+                    height={14}
+                    className="w-3.5 h-3.5 object-contain shrink-0"
+                  />
+                ) : (
+                  skillIcons[skillName] || defaultSkillIcon
+                )}
+                <span className="truncate">{skillName}</span>
+              </div>
+            );
+          })}
         </div>
 
         <div className="mt-10 md:mt-14 w-full">
@@ -197,7 +225,7 @@ export default function Hero({ profile, testimonials }: HeroProps) {
         </div>
       </div>
 
-      <div className="hidden md:block">
+      <div className="hidden lg:block shrink-0">
         <ImageStack previewImages={profile?.heroPreviewImages} />
       </div>
     </section>
