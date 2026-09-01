@@ -9,6 +9,8 @@ interface TitleProps {
   href?: string;
   buttonLabel?: string;
   icon?: React.ReactNode;
+  target?: string;
+  rel?: string;
 }
 
 export default function Title({
@@ -19,11 +21,16 @@ export default function Title({
   showLink = true,
   href,
   buttonLabel = "View all",
-  icon
+  icon,
+  target,
+  rel,
 }: TitleProps) {
 
   const alignClass = align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left';
   const containerJustify = align === 'center' ? 'justify-center' : align === 'right' ? 'justify-end' : 'justify-between';
+
+  const computedTarget = target;
+  const computedRel = rel || (target === '_blank' ? 'noopener noreferrer' : undefined);
 
   return (
     <div className={`flex ${containerJustify} items-center w-full`}>
@@ -37,7 +44,12 @@ export default function Title({
       </div>
 
       {showLink && href && (
-        <Link href={href} className="flex items-center gap-3 group shrink-0">
+        <Link
+          href={href}
+          target={computedTarget}
+          rel={computedRel}
+          className="flex items-center gap-3 group shrink-0"
+        >
           <span className="text-[12px] font-medium text-brand-secondary group-hover:text-brand-primary transition-all duration-200">
             {buttonLabel}
           </span>

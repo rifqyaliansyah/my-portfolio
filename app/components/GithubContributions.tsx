@@ -67,6 +67,7 @@ export default function GithubContributions({ username = "rifqyaliansyah" }: Git
         href={`https://github.com/${targetUsername}`}
         buttonLabel="View GitHub"
         icon={<ArrowIcon />}
+        target="_blank"
       />
 
       <div className="scrollbar-auto mt-8 w-full overflow-x-auto overflow-y-hidden p-6 rounded-xl border border-brand-border-container bg-surface flex md:justify-center text-brand-primary">
