@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Rifqy Aliansyah - Portfolio",
-  description: "My personal portfolio website showing my header and latest works.",
+  title: "Rifqy Aliansyah | Portfolio",
+  description: "Personal portfolio of Rifqy Aliansyah, a Fullstack Developer specializing in seamless web applications, robust backend architectures, and modern web solutions.",
 };
 
 export default function RootLayout({
