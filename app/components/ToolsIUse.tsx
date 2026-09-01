@@ -468,8 +468,8 @@ export default function ToolsIUse({ constraintsRef, revealed = true, tools: sani
   return (
     <section className="mt-32 w-full flex flex-col items-center">
       <Title
-        title="Tools I Use"
-        description="The tools I reach for when designing and building digital products."
+        title="Tech Stack"
+        description="The tech stack and tools I use to build seamless web applications and scalable systems."
         descriptionGap="mt-[24px]"
         align="center"
         showLink={false}
@@ -503,4 +503,4 @@ export default function ToolsIUse({ constraintsRef, revealed = true, tools: sani
       )}
     </section>
   );
-}
+}
