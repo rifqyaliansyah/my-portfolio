@@ -326,7 +326,8 @@ export default function ToolsIUse({ constraintsRef, revealed = true, tools: sani
               alt={t.name || `Tool ${idx + 1}`}
               width={40}
               height={40}
-              className="w-10 h-10 md:w-12 md:h-12 object-contain"
+              draggable={false}
+              className="w-10 h-10 md:w-12 md:h-12 object-contain pointer-events-none select-none"
             />
           );
         } catch {
