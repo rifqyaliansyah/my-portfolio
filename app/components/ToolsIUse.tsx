@@ -313,23 +313,37 @@ export default function ToolsIUse({ constraintsRef, revealed = true, tools: sani
     if (!sanityTools || sanityTools.length === 0) {
       return defaultTools;
     }
-    // Map sanity tools to visual tool cards with icons and balanced zIndexes
+    // Map sanity tools to visual tool cards with correct priority
     return sanityTools.map((t, idx) => {
-      let icon = toolIconsByName[t.name];
-      if (!icon && t.icon) {
-        icon = (
-          <Image
-            src={urlFor(t.icon).width(48).height(48).url()}
-            alt={t.name}
-            width={40}
-            height={40}
-            className="w-10 h-10 md:w-12 md:h-12 object-contain"
-          />
-        );
+      let icon: React.ReactNode = null;
+
+      // 1. Primary: Uploaded Sanity icon
+      if (t.icon && t.icon.asset) {
+        try {
+          icon = (
+            <Image
+              src={urlFor(t.icon).width(48).height(48).auto('format').url()}
+              alt={t.name || `Tool ${idx + 1}`}
+              width={40}
+              height={40}
+              className="w-10 h-10 md:w-12 md:h-12 object-contain"
+            />
+          );
+        } catch {
+          icon = null;
+        }
       }
+
+      // 2. Fallback 1: Predefined SVG icon by tool name
+      if (!icon && t.name && toolIconsByName[t.name]) {
+        icon = toolIconsByName[t.name];
+      }
+
+      // 3. Fallback 2: Default placeholder icon
       if (!icon) {
         icon = defaultTools[idx % defaultTools.length].icon;
       }
+
       return {
         id: t._id || idx + 1,
         icon,
