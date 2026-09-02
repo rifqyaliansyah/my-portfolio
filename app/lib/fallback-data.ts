@@ -74,6 +74,13 @@ export const fallbackProjects = [
     description: "A sleek and modern interface for booking flights and accommodations.",
     href: "#projects",
   },
+  {
+    id: "6",
+    imageSrc: "/example.jpg",
+    title: "AI Productivity Suite",
+    description: "An integrated workspace powered by AI to supercharge daily workflows.",
+    href: "#projects",
+  },
 ];
 
 export const fallbackWritings = [
