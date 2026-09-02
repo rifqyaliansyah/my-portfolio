@@ -20,21 +20,21 @@ export const fallbackTestimonials = [
     quote: "Rifqy selalu bisa nerjemahin requirement yang ambigu jadi UI yang rapi dan gampang dipakai.",
     name: "Dimas Pratama",
     role: "Product Manager",
-    avatar: "/profile.png",
+    avatar: null,
   },
   {
     id: "2",
     quote: "Kerja bareng Rifqy enak banget, komunikasinya jelas dan hasilnya selalu di atas ekspektasi.",
     name: "Sarah Amelia",
     role: "UI/UX Designer",
-    avatar: "/profile.png",
+    avatar: null,
   },
   {
     id: "3",
     quote: "Detail banget soal micro-interaction, portofolionya juga mencerminkan itu.",
     name: "Bagas Nugraha",
     role: "Frontend Lead",
-    avatar: "/profile.png",
+    avatar: null,
   },
 ];
 

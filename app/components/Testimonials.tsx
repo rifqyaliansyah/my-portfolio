@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
+import Avatar from "./Avatar";
 import { TestimonialData } from "@/app/types/sanity";
 import { urlFor } from "@/app/lib/sanity";
 import { fallbackTestimonials } from "@/app/lib/fallback-data";
@@ -11,7 +12,7 @@ interface TestimonialItem {
     quote: string;
     name: string;
     role: string;
-    avatar: string;
+    avatar?: string | null;
 }
 
 const ROTATE_INTERVAL = 4000;
@@ -44,13 +45,11 @@ function CardContent({ testimonial }: { testimonial: TestimonialItem }) {
                     className="flex items-center justify-center rounded-lg shrink-0"
                     style={{ width: 32, height: 32, backgroundColor: "var(--surface-color)" }}
                 >
-                    <Image
+                    <Avatar
                         src={testimonial.avatar}
-                        alt={testimonial.name}
-                        width={28}
-                        height={28}
-                        className="rounded-md object-cover"
-                        style={{ width: 28, height: 28 }}
+                        name={testimonial.name}
+                        size={28}
+                        roundedClassName="rounded-md"
                     />
                 </div>
                 <div className="flex flex-col">
@@ -77,7 +76,7 @@ export default function Testimonials({ items }: TestimonialsProps) {
             quote: t.quote,
             name: t.name,
             role: t.role,
-            avatar: t.avatar ? urlFor(t.avatar).width(48).height(48).url() : "/profile.png",
+            avatar: t.avatar ? urlFor(t.avatar).width(56).height(56).url() : null,
         }))
         : fallbackTestimonials;
 

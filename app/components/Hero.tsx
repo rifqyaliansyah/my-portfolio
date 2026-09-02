@@ -1,6 +1,7 @@
 import Image from "next/image";
 import ImageStack from "./ImageStack";
 import Testimonials from "./Testimonials";
+import Avatar from "./Avatar";
 import { ProfileData, TestimonialData, QuickSkillItem } from "@/app/types/sanity";
 import { urlFor } from "@/app/lib/sanity";
 import { fallbackSkills, fallbackEmail } from "@/app/lib/fallback-data";
@@ -61,7 +62,7 @@ interface HeroProps {
 
 export default function Hero({ profile, testimonials }: HeroProps) {
   const name = profile?.name || "Rifqy Aliansyah";
-  const avatarUrl = profile?.avatar ? urlFor(profile.avatar).width(140).height(140).url() : "/profile.png";
+  const avatarUrl = profile?.avatar ? urlFor(profile.avatar).width(140).height(140).url() : null;
   const email = profile?.email || fallbackEmail;
 
   // Normalize quickSkills items (handles both string and QuickSkillItem object)
@@ -143,13 +144,11 @@ export default function Hero({ profile, testimonials }: HeroProps) {
               boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
             }}
           >
-            <Image
+            <Avatar
               src={avatarUrl}
-              alt={name}
-              width={70}
-              height={70}
-              className="rounded-xl object-cover"
-              style={{ width: 70, height: 70 }}
+              name={name}
+              size={70}
+              roundedClassName="rounded-xl"
               priority
             />
           </div>
