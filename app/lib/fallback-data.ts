@@ -9,9 +9,12 @@ export const fallbackSkills = [
 ];
 
 export const fallbackHeroPreviewImages = [
-  { src: "/example.jpg", alt: "Project 1" },
-  { src: "/example.jpg", alt: "Project 2" },
-  { src: "/example.jpg", alt: "Project 3" },
+  { src: "/example.jpg", alt: "Frontend Specialist Certificate" },
+  { src: "/example.jpg", alt: "UI/UX Design Mastery Certificate" },
+  { src: "/example.jpg", alt: "React & Next.js Advanced Certificate" },
+  { src: "/example.jpg", alt: "Cloud Practitioner Certificate" },
+  { src: "/example.jpg", alt: "Fullstack Engineering Certificate" },
+  { src: "/example.jpg", alt: "Mobile App Development Certificate" },
 ];
 
 export const fallbackTestimonials = [
