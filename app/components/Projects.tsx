@@ -22,7 +22,7 @@ export default function Projects({ projects }: ProjectsProps) {
       imageSrc: p.coverImage ? urlFor(p.coverImage).width(608).height(400).auto('format').url() : '/example.jpg',
       title: p.title,
       description: p.description,
-      href: p.projectUrl || (p.slug?.current ? `/projects/${p.slug.current}` : '#projects'),
+      href: p.slug?.current ? `/projects/${p.slug.current}` : (p.projectUrl || '/projects'),
     }))
     : fallbackProjects;
 
@@ -30,7 +30,7 @@ export default function Projects({ projects }: ProjectsProps) {
     <section id="projects" className="mt-32 w-full flex flex-col">
       <Title 
         title="Featured Projects" 
-        href="#projects" 
+        href="/projects" 
         buttonLabel="View all"
         icon={<ArrowIcon />} 
       />

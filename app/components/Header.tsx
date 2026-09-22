@@ -64,9 +64,9 @@ export default function Header() {
   };
 
   const navItems = [
-    { label: "About", href: "#about" },
-    { label: "Project", href: "#projects" },
-    { label: "Writing", href: "#writing" },
+    { label: "About", href: "/#about" },
+    { label: "Projects", href: "/projects" },
+    { label: "Writing", href: "/writings" },
   ];
 
   const desktopNavLinks = (
@@ -75,7 +75,7 @@ export default function Header() {
         <a
           key={item.href}
           href={item.href}
-          className="relative text-[15px] lg:text-[16px] font-medium text-brand-secondary hover:text-brand-primary transition-colors duration-300 py-1 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[1.5px] after:bg-(--primary-color) after:scale-x-0 hover:after:scale-x-100 after:origin-right hover:after:origin-left after:transition-transform after:duration-300"
+          className="text-[15px] lg:text-[16px] font-medium text-brand-secondary hover:text-brand-primary transition-colors duration-200 py-1"
         >
           {item.label}
         </a>
@@ -159,7 +159,7 @@ export default function Header() {
   return (
     <>
       <header className="relative flex items-center justify-between w-full">
-        <a href="#" className="text-[20px] md:text-[24px] font-semibold text-brand-primary leading-none select-none tracking-tight">
+        <a href="/" className="text-[20px] md:text-[24px] font-semibold text-brand-primary leading-none select-none tracking-tight">
           Hola!
         </a>
 
@@ -182,7 +182,7 @@ export default function Header() {
             style={{ backdropFilter: "blur(12px)" }}
           >
             <div className="w-full max-w-280 mx-auto px-6 sm:px-10 md:px-12 lg:px-20 h-16 md:h-18 flex items-center justify-between">
-              <a href="#" className="text-[18px] md:text-[20px] font-semibold text-brand-primary leading-none select-none tracking-tight">
+              <a href="/" className="text-[18px] md:text-[20px] font-semibold text-brand-primary leading-none select-none tracking-tight">
                 Hola!
               </a>
               <div className="flex items-center gap-3 md:gap-8">
@@ -208,7 +208,7 @@ export default function Header() {
             {/* Top Bar Header inside Fullscreen Menu */}
             <div className="flex items-center justify-between w-full">
               <a
-                href="#"
+                href="/"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-[22px] font-semibold text-brand-primary leading-none select-none tracking-tight"
               >

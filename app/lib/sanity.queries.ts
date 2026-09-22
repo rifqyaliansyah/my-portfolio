@@ -45,10 +45,15 @@ export const ALL_PROJECTS_QUERY = `
     slug,
     description,
     coverImage,
+    gallery,
     tags,
     projectUrl,
+    githubUrl,
+    content,
     isFeatured,
-    order
+    order,
+    publishedAt,
+    _createdAt
   }
 `
 
@@ -59,22 +64,31 @@ export const PROJECT_BY_SLUG_QUERY = `
     slug,
     description,
     coverImage,
+    gallery,
     tags,
     projectUrl,
+    githubUrl,
+    content,
     isFeatured,
-    order
+    order,
+    publishedAt,
+    _createdAt
   }
 `
 
 export const WRITINGS_QUERY = `
-  *[_type == "writing"] | order(publishedAt desc) {
+  *[_type == "writing"] | order(publishedAt desc, _createdAt desc) {
     _id,
     title,
     slug,
     excerpt,
+    description,
     coverImage,
     publishedAt,
-    externalUrl
+    readingTime,
+    tags,
+    externalUrl,
+    _createdAt
   }
 `
 
@@ -84,10 +98,14 @@ export const WRITING_BY_SLUG_QUERY = `
     title,
     slug,
     excerpt,
+    description,
     coverImage,
     publishedAt,
+    readingTime,
+    tags,
     content,
-    externalUrl
+    externalUrl,
+    _createdAt
   }
 `
 

@@ -47,10 +47,14 @@ export interface ProjectData {
   slug?: { current: string }
   description: string
   coverImage?: SanityImage
+  gallery?: SanityImage[]
   tags?: string[]
   projectUrl?: string
+  githubUrl?: string
+  content?: any[]
   isFeatured?: boolean
   order?: number
+  publishedAt?: string
 }
 
 export interface WritingData {
@@ -61,6 +65,8 @@ export interface WritingData {
   description?: string
   coverImage?: SanityImage
   publishedAt?: string
+  readingTime?: string
+  tags?: string[]
   content?: any[]
   externalUrl?: string
 }

@@ -22,7 +22,11 @@ export default function Writing({ writings }: WritingProps) {
       imageSrc: w.coverImage ? urlFor(w.coverImage).width(608).height(400).auto('format').url() : '/example.jpg',
       title: w.title,
       description: w.excerpt || w.description || '',
-      href: w.externalUrl || (w.slug?.current ? `/writing/${w.slug.current}` : '#writing'),
+      href: (w.externalUrl && (w.externalUrl.startsWith('http://') || w.externalUrl.startsWith('https://')))
+        ? w.externalUrl
+        : w.slug?.current
+        ? `/writings/${w.slug.current}`
+        : '/writings',
     }))
     : fallbackWritings;
 
@@ -30,7 +34,7 @@ export default function Writing({ writings }: WritingProps) {
     <section id="writing" className="mt-32 w-full flex flex-col">
       <Title 
         title="Writing" 
-        href="#writing" 
+        href="/writings" 
         buttonLabel="View Writing"
         icon={<ArrowIcon />} 
       />
