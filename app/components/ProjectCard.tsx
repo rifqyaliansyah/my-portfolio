@@ -42,11 +42,6 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 ↗
               </span>
             </h3>
-            {project.timeline && (
-              <span className="text-[11px] font-mono text-brand-secondary shrink-0">
-                {project.timeline}
-              </span>
-            )}
           </div>
 
           <p className="mt-2 text-[13px] md:text-[14px] leading-relaxed text-brand-secondary line-clamp-2">
