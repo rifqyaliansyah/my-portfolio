@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import Title from './Title';
 import { GitHubCalendar } from 'react-github-calendar';
 import type { Activity } from 'react-github-calendar';
@@ -19,23 +19,10 @@ interface GithubContributionsProps {
 export default function GithubContributions({ username = "rifqyaliansyah" }: GithubContributionsProps) {
   const [mounted, setMounted] = useState(false);
   const [totalContributions, setTotalContributions] = useState<number | null>(null);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const pendingTotal = useRef<number | null>(null);
 
   const targetUsername = username || "rifqyaliansyah";
-
-  // transformData is called during render, so we store in a ref and sync via useEffect
-  const handleTransformData = useCallback((contributions: Activity[]) => {
-    const total = contributions.reduce((sum, day) => sum + day.count, 0);
-    pendingTotal.current = total;
-    return contributions;
-  }, []);
-
-  useEffect(() => {
-    if (pendingTotal.current !== null) {
-      setTotalContributions(pendingTotal.current);
-    }
-  });
 
   useEffect(() => {
     setMounted(true);
@@ -55,9 +42,42 @@ export default function GithubContributions({ username = "rifqyaliansyah" }: Git
     return () => observer.disconnect();
   }, [targetUsername]);
 
-  const description = totalContributions !== null
+  useEffect(() => {
+    const controller = new AbortController();
+
+    setStatus("loading");
+    setTotalContributions(null);
+
+    fetch(`https://github-contributions-api.jogruber.de/v4/${targetUsername}?y=last`, {
+      signal: controller.signal,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch contributions for "${targetUsername}"`);
+        }
+        return response.json();
+      })
+      .then((data: { contributions?: Activity[]; total?: { lastYear?: number } }) => {
+        const total = typeof data.total?.lastYear === "number"
+          ? data.total.lastYear
+          : (data.contributions ?? []).reduce((sum, day) => sum + day.count, 0);
+
+        setTotalContributions(total);
+        setStatus("ready");
+      })
+      .catch(() => {
+        if (controller.signal.aborted) return;
+        setStatus("error");
+      });
+
+    return () => controller.abort();
+  }, [targetUsername]);
+
+  const description = status === "ready" && totalContributions !== null
     ? `${totalContributions} contributions in the last year`
-    : 'Loading contributions...';
+    : status === "error"
+      ? 'Contributions are unavailable right now'
+      : 'Loading contributions...';
 
   return (
     <section className="mt-32 w-full flex flex-col">
@@ -81,7 +101,6 @@ export default function GithubContributions({ username = "rifqyaliansyah" }: Git
               colorScheme={theme}
               showTotalCount={false}
               showWeekdayLabels={true}
-              transformData={handleTransformData}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-brand-secondary text-sm">
