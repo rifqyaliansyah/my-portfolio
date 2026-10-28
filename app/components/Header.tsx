@@ -160,7 +160,7 @@ export default function Header() {
     <>
       <header className="relative flex items-center justify-between w-full">
         <a href="/" className="text-[20px] md:text-[24px] font-semibold text-brand-primary leading-none select-none tracking-tight">
-          Hola!
+          Hi!
         </a>
 
         <div className="flex items-center gap-3 md:gap-6">
@@ -183,7 +183,7 @@ export default function Header() {
           >
             <div className="w-full max-w-280 mx-auto px-6 sm:px-10 md:px-12 lg:px-20 h-16 md:h-18 flex items-center justify-between">
               <a href="/" className="text-[18px] md:text-[20px] font-semibold text-brand-primary leading-none select-none tracking-tight">
-                Hola!
+                Hi!
               </a>
               <div className="flex items-center gap-3 md:gap-8">
                 {desktopNavLinks}
@@ -212,7 +212,7 @@ export default function Header() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="text-[22px] font-semibold text-brand-primary leading-none select-none tracking-tight"
               >
-                Hola!
+                Hi!
               </a>
 
               <div className="flex items-center gap-3">

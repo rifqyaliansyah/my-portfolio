@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState, ReactNode } from "react";
+import { useEffect } from "react";
 import Header from "./Header";
 import Hero from "./Hero";
 import AboutMe from "./AboutMe";
@@ -9,7 +9,6 @@ import Writing from "./Writing";
 import GithubContributions from "./GithubContributions";
 import ToolsIUse from "./ToolsIUse";
 import Footer from "./Footer";
-import ScrollReveal from "./ScrollReveal";
 import BackToTop from "./BackToTop";
 import { LandingPageData } from "@/app/types/sanity";
 
@@ -18,9 +17,6 @@ interface ClientHomeLayoutProps {
 }
 
 export default function ClientHomeLayout({ data }: ClientHomeLayoutProps) {
-  const mainRef = useRef<HTMLElement>(null);
-  const [toolsRevealed, setToolsRevealed] = useState(false);
-
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
@@ -46,42 +42,20 @@ export default function ClientHomeLayout({ data }: ClientHomeLayoutProps) {
 
   return (
     <div className="min-h-screen bg-page md:px-6 flex flex-col justify-start">
-      <main
-        ref={mainRef}
-        className="w-full max-w-280 mx-auto my-0 md:my-8 lg:my-16 bg-container rounded-none md:rounded-[48px] lg:rounded-[64px] border border-brand-border-container p-6 sm:p-10 md:p-12 lg:p-20 flex flex-col transition-all duration-300 relative overflow-hidden"
-      >
+      <main className="w-full max-w-280 mx-auto my-0 md:my-8 lg:my-16 bg-container rounded-none md:rounded-[48px] lg:rounded-[64px] border border-brand-border-container p-6 sm:p-10 md:p-12 lg:p-20 flex flex-col transition-all duration-300 relative overflow-hidden">
         <Header />
 
-        <ScrollReveal delay={0.1}>
-          <Hero profile={data?.profile} testimonials={data?.testimonials} />
-        </ScrollReveal>
+        <Hero profile={data?.profile} testimonials={data?.testimonials} />
 
-        <ScrollReveal>
-          <Projects projects={data?.featuredProjects} />
-        </ScrollReveal>
+        <Projects projects={data?.featuredProjects} />
 
-        <ScrollReveal>
-          <Writing writings={data?.writings} />
-        </ScrollReveal>
+        <Writing writings={data?.writings} />
 
-        <ScrollReveal>
-          <GithubContributions username={data?.profile?.githubUsername} />
-        </ScrollReveal>
+        <GithubContributions username={data?.profile?.githubUsername} />
 
-        <ScrollReveal
-          className="relative z-20"
-          onAnimationComplete={() => setToolsRevealed(true)}
-        >
-          <ToolsIUse
-            constraintsRef={mainRef}
-            revealed={toolsRevealed}
-            tools={data?.tools}
-          />
-        </ScrollReveal>
+        <ToolsIUse tools={data?.tools} />
 
-        <ScrollReveal>
-          <AboutMe profile={data?.profile} />
-        </ScrollReveal>
+        <AboutMe profile={data?.profile} />
 
         <Footer profile={data?.profile} />
       </main>

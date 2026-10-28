@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ImageLightboxProps {
@@ -12,9 +11,48 @@ interface ImageLightboxProps {
   onClose: () => void;
 }
 
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 4;
+const DOUBLE_CLICK_ZOOM = 2.5;
+
+interface ZoomTransform {
+  scale: number;
+  x: number;
+  y: number;
+}
+
+interface DragState {
+  pointerId: number;
+  startX: number;
+  startY: number;
+  originX: number;
+  originY: number;
+}
+
+interface PinchState {
+  distance: number;
+  scale: number;
+  x: number;
+  y: number;
+}
+
+const IDENTITY_TRANSFORM: ZoomTransform = { scale: 1, x: 0, y: 0 };
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
+
 export default function ImageLightbox({ images, initialIndex, isOpen, onClose }: ImageLightboxProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [mounted, setMounted] = useState(false);
+  const [transform, setTransform] = useState<ZoomTransform>(IDENTITY_TRANSFORM);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isPinching, setIsPinching] = useState(false);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const dragStateRef = useRef<DragState | null>(null);
+  const pinchStateRef = useRef<PinchState | null>(null);
+  const pointersRef = useRef<Map<number, { x: number; y: number }>>(new Map());
 
   useEffect(() => {
     setMounted(true);
@@ -26,6 +64,16 @@ export default function ImageLightbox({ images, initialIndex, isOpen, onClose }:
       setCurrentIndex(initialIndex);
     }
   }, [isOpen, initialIndex]);
+
+  // Reset zoom when the image changes or the lightbox closes
+  useEffect(() => {
+    setTransform(IDENTITY_TRANSFORM);
+    dragStateRef.current = null;
+    pinchStateRef.current = null;
+    pointersRef.current.clear();
+    setIsDragging(false);
+    setIsPinching(false);
+  }, [currentIndex, isOpen]);
 
   // Lock body scroll
   useEffect(() => {
@@ -46,6 +94,185 @@ export default function ImageLightbox({ images, initialIndex, isOpen, onClose }:
   const goPrev = useCallback(() => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   }, [images.length]);
+
+  // Keep the zoomed image within the viewport bounds
+  const boundTransform = useCallback((next: ZoomTransform): ZoomTransform => {
+    if (next.scale <= MIN_ZOOM) {
+      return IDENTITY_TRANSFORM;
+    }
+
+    const container = containerRef.current;
+    const image = imageRef.current;
+    if (!container || !image) {
+      return next;
+    }
+
+    const maxX = Math.max(0, (image.clientWidth * next.scale - container.clientWidth) / 2);
+    const maxY = Math.max(0, (image.clientHeight * next.scale - container.clientHeight) / 2);
+
+    return {
+      scale: next.scale,
+      x: clamp(next.x, -maxX, maxX),
+      y: clamp(next.y, -maxY, maxY),
+    };
+  }, []);
+
+  // Zoom keeping the point under the cursor/fingers fixed
+  const zoomAtPoint = useCallback(
+    (targetScale: number, clientX: number, clientY: number) => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const rect = container.getBoundingClientRect();
+      const originX = clientX - (rect.left + rect.width / 2);
+      const originY = clientY - (rect.top + rect.height / 2);
+
+      setTransform((prev) => {
+        const nextScale = clamp(targetScale, MIN_ZOOM, MAX_ZOOM);
+        if (Math.abs(nextScale - prev.scale) < 0.001) return prev;
+        if (nextScale === MIN_ZOOM) return IDENTITY_TRANSFORM;
+
+        const ratio = nextScale / prev.scale;
+        return boundTransform({
+          scale: nextScale,
+          x: originX - (originX - prev.x) * ratio,
+          y: originY - (originY - prev.y) * ratio,
+        });
+      });
+    },
+    [boundTransform]
+  );
+
+  // Wheel zoom (native listener so preventDefault works)
+  useEffect(() => {
+    if (!isOpen || !mounted) return;
+
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleWheel = (event: WheelEvent) => {
+      event.preventDefault();
+
+      const containerRect = container.getBoundingClientRect();
+      const originX = event.clientX - (containerRect.left + containerRect.width / 2);
+      const originY = event.clientY - (containerRect.top + containerRect.height / 2);
+      const deltaMultiplier = event.deltaMode === 1 ? 0.05 : 0.0015;
+
+      setTransform((prev) => {
+        const nextScale = clamp(
+          prev.scale * Math.exp(-event.deltaY * deltaMultiplier),
+          MIN_ZOOM,
+          MAX_ZOOM
+        );
+        if (Math.abs(nextScale - prev.scale) < 0.001) return prev;
+        if (nextScale === MIN_ZOOM) return IDENTITY_TRANSFORM;
+
+        const ratio = nextScale / prev.scale;
+        return boundTransform({
+          scale: nextScale,
+          x: originX - (originX - prev.x) * ratio,
+          y: originY - (originY - prev.y) * ratio,
+        });
+      });
+    };
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    return () => container.removeEventListener("wheel", handleWheel);
+  }, [isOpen, mounted, currentIndex, boundTransform]);
+
+  const handleDoubleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+
+    if (transform.scale > MIN_ZOOM) {
+      setTransform(IDENTITY_TRANSFORM);
+      return;
+    }
+
+    zoomAtPoint(DOUBLE_CLICK_ZOOM, event.clientX, event.clientY);
+  };
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return;
+
+    pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    if (pointersRef.current.size === 2) {
+      const [first, second] = Array.from(pointersRef.current.values());
+      pinchStateRef.current = {
+        distance: Math.hypot(first.x - second.x, first.y - second.y),
+        scale: transform.scale,
+        x: transform.x,
+        y: transform.y,
+      };
+      dragStateRef.current = null;
+      setIsDragging(false);
+      setIsPinching(true);
+      return;
+    }
+
+    if (transform.scale > MIN_ZOOM) {
+      dragStateRef.current = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        originX: transform.x,
+        originY: transform.y,
+      };
+      setIsDragging(true);
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!pointersRef.current.has(event.pointerId)) return;
+
+    pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    const pinch = pinchStateRef.current;
+    if (pinch && pointersRef.current.size >= 2) {
+      const [first, second] = Array.from(pointersRef.current.values());
+      const distance = Math.hypot(first.x - second.x, first.y - second.y);
+
+      if (pinch.distance > 0) {
+        const nextScale = clamp(
+          pinch.scale * (distance / pinch.distance),
+          MIN_ZOOM,
+          MAX_ZOOM
+        );
+        setTransform(boundTransform({ scale: nextScale, x: pinch.x, y: pinch.y }));
+      }
+      return;
+    }
+
+    const drag = dragStateRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+
+    setTransform((prev) =>
+      boundTransform({
+        scale: prev.scale,
+        x: drag.originX + (event.clientX - drag.startX),
+        y: drag.originY + (event.clientY - drag.startY),
+      })
+    );
+  };
+
+  const handlePointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
+    pointersRef.current.delete(event.pointerId);
+
+    if (pointersRef.current.size < 2) {
+      pinchStateRef.current = null;
+      setIsPinching(false);
+    }
+
+    if (dragStateRef.current?.pointerId === event.pointerId) {
+      dragStateRef.current = null;
+      setIsDragging(false);
+    }
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
 
   // Keyboard navigation
   useEffect(() => {
@@ -109,19 +336,41 @@ export default function ImageLightbox({ images, initialIndex, isOpen, onClose }:
           {/* Image Container - Full authentic view without rounding or cropping */}
           <motion.div
             key={currentIndex}
+            ref={containerRef}
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="relative flex items-center justify-center max-w-7xl w-full h-full max-h-[82vh] sm:max-h-[88vh]"
+            className="relative flex items-center justify-center max-w-7xl w-full h-full max-h-[82vh] sm:max-h-[88vh] select-none"
+            style={{
+              cursor:
+                transform.scale > MIN_ZOOM
+                  ? isDragging
+                    ? "grabbing"
+                    : "grab"
+                  : "zoom-in",
+              touchAction: "none",
+            }}
             onClick={(e) => e.stopPropagation()}
+            onDoubleClick={handleDoubleClick}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerEnd}
+            onPointerCancel={handlePointerEnd}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              ref={imageRef}
               src={activeImageSrc}
               alt={current.alt}
+              draggable={false}
               className="max-w-full max-h-full object-contain shadow-2xl select-none"
-              style={{ maxHeight: "calc(88vh - 50px)" }}
+              onDragStart={(e) => e.preventDefault()}
+              style={{
+                maxHeight: "calc(88vh - 50px)",
+                transform: `translate3d(${transform.x}px, ${transform.y}px, 0) scale(${transform.scale})`,
+                transition: isDragging || isPinching ? "none" : "transform 150ms ease-out",
+              }}
             />
           </motion.div>
 

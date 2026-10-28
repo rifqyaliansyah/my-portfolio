@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef, memo } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Title from './Title';
 
 const FigmaIcon = () => (
@@ -180,141 +179,83 @@ const toolIconsByName: Record<string, React.ReactNode> = {
 
 interface ToolItem {
   id: string | number;
+  name: string;
   icon: React.ReactNode;
-  zIndex: number;
 }
 
 const defaultTools: ToolItem[] = [
-  { id: 1, icon: <FigmaIcon />, zIndex: 20 },
-  { id: 2, icon: <CleanShotIcon />, zIndex: 10 },
-  { id: 3, icon: <AvatarIcon />, zIndex: 30 },
-  { id: 4, icon: <DaVinciIcon />, zIndex: 15 },
-  { id: 5, icon: <ObsidianIcon />, zIndex: 40 },
-  { id: 6, icon: <CubeIcon />, zIndex: 25 },
-  { id: 7, icon: <RaycastIcon />, zIndex: 35 },
-  { id: 8, icon: <ArcIcon />, zIndex: 20 },
-  { id: 9, icon: <VSCodeIcon />, zIndex: 18 },
-  { id: 10, icon: <NotionIcon />, zIndex: 22 },
-  { id: 11, icon: <NextJsIcon />, zIndex: 28 },
-  { id: 12, icon: <SpotifyIcon />, zIndex: 12 },
-  { id: 13, icon: <SlackIcon />, zIndex: 16 },
-  { id: 14, icon: <GitIcon />, zIndex: 32 },
-  { id: 15, icon: <TailwindIcon />, zIndex: 24 },
-  { id: 16, icon: <LinearIcon />, zIndex: 38 },
+  { id: 1, name: 'Figma', icon: <FigmaIcon /> },
+  { id: 2, name: 'CleanShot', icon: <CleanShotIcon /> },
+  { id: 3, name: 'Avatar', icon: <AvatarIcon /> },
+  { id: 4, name: 'DaVinci', icon: <DaVinciIcon /> },
+  { id: 5, name: 'Obsidian', icon: <ObsidianIcon /> },
+  { id: 6, name: 'Cube', icon: <CubeIcon /> },
+  { id: 7, name: 'Raycast', icon: <RaycastIcon /> },
+  { id: 8, name: 'Arc', icon: <ArcIcon /> },
+  { id: 9, name: 'VS Code', icon: <VSCodeIcon /> },
+  { id: 10, name: 'Notion', icon: <NotionIcon /> },
+  { id: 11, name: 'React / Next.js', icon: <NextJsIcon /> },
+  { id: 12, name: 'Spotify', icon: <SpotifyIcon /> },
+  { id: 13, name: 'Slack', icon: <SlackIcon /> },
+  { id: 14, name: 'Git', icon: <GitIcon /> },
+  { id: 15, name: 'Tailwind CSS', icon: <TailwindIcon /> },
+  { id: 16, name: 'Linear', icon: <LinearIcon /> },
 ];
 
-
-const MOBILE_CARD_SIZE = 72;
-const MOBILE_OVERLAP = 18; 
-const ARC_HEIGHT = 26;
-const ARC_MAX_TILT = 14;
-const ROW_GAP = 36;
-
-interface CardPosition {
-  left: number;
-  top: number;
-  rotate: number;
+interface LayoutMetrics {
+  cardSize: number;
+  overlap: number;
+  arcHeight: number;
+  rowGap: number;
+  maxPerRow: number;
 }
 
+const MOBILE_METRICS: LayoutMetrics = {
+  cardSize: 72,
+  overlap: 4,
+  arcHeight: 16,
+  rowGap: 28,
+  maxPerRow: 4,
+};
+
+const TABLET_METRICS: LayoutMetrics = {
+  cardSize: 80,
+  overlap: 5,
+  arcHeight: 20,
+  rowGap: 34,
+  maxPerRow: 8,
+};
+
+const DESKTOP_METRICS: LayoutMetrics = {
+  cardSize: 100,
+  overlap: 6,
+  arcHeight: 26,
+  rowGap: 42,
+  maxPerRow: 8,
+};
+
+const ARC_MAX_TILT = 10;
+
+const getLayoutMetrics = (): LayoutMetrics => {
+  if (typeof window === 'undefined') return MOBILE_METRICS;
+  if (window.matchMedia('(min-width: 768px)').matches) return DESKTOP_METRICS;
+  if (window.matchMedia('(min-width: 640px)').matches) return TABLET_METRICS;
+  return MOBILE_METRICS;
+};
+
+
 interface ToolsIUseProps {
-  constraintsRef?: React.RefObject<HTMLElement | null>;
-  revealed?: boolean;
   tools?: ToolData[];
 }
 
-const ToolCard = memo(function ToolCard({
-  tool,
-  pos,
-  constraintsRef,
-  enableHover,
-}: {
-  tool: ToolItem;
-  pos: CardPosition;
-  constraintsRef?: React.RefObject<HTMLElement | null>;
-  enableHover: boolean;
-}) {
-  return (
-    <motion.div
-      drag
-      dragConstraints={constraintsRef}
-      dragElastic={0.15}
-      dragMomentum={true}
-      dragTransition={{ power: 0.15, timeConstant: 250 }}
-      whileHover={enableHover ? { scale: 1.1, zIndex: 50 } : undefined}
-      whileDrag={{ scale: 1.05, cursor: "grabbing" }}
-      className={`
-        absolute w-17.5 h-17.5 sm:w-20 sm:h-20 md:w-25 md:h-25
-        bg-container rounded-2xl flex items-center justify-center
-        border border-brand-border-container shadow-[0_8px_30px_var(--card-shadow-color)]
-        cursor-grab active:cursor-grabbing select-none touch-none
-      `}
-      style={{
-        left: `${pos.left}%`,
-        top: `${pos.top}%`,
-        rotate: `${pos.rotate}deg`,
-        zIndex: tool.zIndex,
-        willChange: "transform",
-        backfaceVisibility: "hidden",
-        transform: "translateZ(0)",
-      }}
-    >
-      {tool.icon}
-    </motion.div>
-  );
-});
-
-const MobileToolCard = memo(function MobileToolCard({
-  tool,
-  posInRow,
-  rowLength,
-  isRowStart,
-  enableHover,
-}: {
-  tool: ToolItem;
-  posInRow: number;
-  rowLength: number;
-  isRowStart: boolean;
-  enableHover: boolean;
-}) {
-  const normalized = rowLength > 1 ? (posInRow - (rowLength - 1) / 2) / ((rowLength - 1) / 2) : 0;
-  const arcY = -ARC_HEIGHT * (1 - normalized * normalized);
-  const rotate = normalized * ARC_MAX_TILT;
-  const baseZIndex = 100 - Math.abs(posInRow - (rowLength - 1) / 2) * 10;
-
-  return (
-    <motion.div
-      className="
-        relative shrink-0
-        bg-container rounded-2xl flex items-center justify-center
-        border border-brand-border-container shadow-[0_8px_30px_var(--card-shadow-color)]
-        select-none cursor-pointer
-      "
-      style={{
-        width: MOBILE_CARD_SIZE,
-        height: MOBILE_CARD_SIZE,
-        marginLeft: isRowStart ? 0 : -MOBILE_OVERLAP,
-        y: arcY,
-        rotate: `${rotate}deg`,
-        zIndex: baseZIndex,
-        willChange: "transform",
-        touchAction: "manipulation",
-      }}
-      whileHover={enableHover ? { scale: 1.2, zIndex: 200, rotate: 0 } : undefined}
-      whileTap={{ scale: 1.15, zIndex: 200, rotate: 0 }}
-      transition={{ type: "spring", stiffness: 400, damping: 25, mass: 0.5 }}
-    >
-      {tool.icon}
-    </motion.div>
-  );
-});
-
-export default function ToolsIUse({ constraintsRef, revealed = true, tools: sanityTools }: ToolsIUseProps) {
+export default function ToolsIUse({ tools: sanityTools }: ToolsIUseProps) {
   const activeTools: ToolItem[] = useMemo(() => {
     if (!sanityTools || sanityTools.length === 0) {
       return defaultTools;
     }
     // Map sanity tools to visual tool cards with correct priority
     return sanityTools.map((t, idx) => {
+      const fallbackTool = defaultTools[idx % defaultTools.length];
       let icon: React.ReactNode = null;
 
       // 1. Primary: Uploaded Sanity icon
@@ -323,7 +264,7 @@ export default function ToolsIUse({ constraintsRef, revealed = true, tools: sani
           icon = (
             <Image
               src={urlFor(t.icon).width(48).height(48).auto('format').url()}
-              alt={t.name || `Tool ${idx + 1}`}
+              alt={t.name || fallbackTool.name}
               width={40}
               height={40}
               draggable={false}
@@ -342,129 +283,90 @@ export default function ToolsIUse({ constraintsRef, revealed = true, tools: sani
 
       // 3. Fallback 2: Default placeholder icon
       if (!icon) {
-        icon = defaultTools[idx % defaultTools.length].icon;
+        icon = fallbackTool.icon;
       }
 
       return {
         id: t._id || idx + 1,
+        name: t.name || fallbackTool.name,
         icon,
-        zIndex: 10 + ((idx * 7) % 35),
       };
     });
   }, [sanityTools]);
 
-  const [mounted, setMounted] = useState(false);
-  const [positions, setPositions] = useState<CardPosition[]>([]);
-  const [enableHover, setEnableHover] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const [itemsPerRow, setItemsPerRow] = useState(5);
-  const mobileContainerRef = useRef<HTMLDivElement>(null);
+  const [metrics, setMetrics] = useState<LayoutMetrics>(MOBILE_METRICS);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [hoveredId, setHoveredId] = useState<ToolItem['id'] | null>(null);
+  const [activeId, setActiveId] = useState<ToolItem['id'] | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !window.matchMedia) return;
-
-    const coarseQuery = window.matchMedia("(pointer: coarse)");
-    const widthQuery = window.matchMedia("(max-width: 767px)");
-
-    const updateFlags = () => {
-      setEnableHover(!coarseQuery.matches);
-      setIsMobile(coarseQuery.matches || widthQuery.matches);
-    };
-
-    updateFlags();
-    coarseQuery.addEventListener("change", updateFlags);
-    widthQuery.addEventListener("change", updateFlags);
-
-    return () => {
-      coarseQuery.removeEventListener("change", updateFlags);
-      widthQuery.removeEventListener("change", updateFlags);
-    };
+    const updateMetrics = () => setMetrics(getLayoutMetrics());
+    updateMetrics();
+    window.addEventListener('resize', updateMetrics);
+    return () => window.removeEventListener('resize', updateMetrics);
   }, []);
 
+  // Follow the real container width so each arc spans the available space
   useEffect(() => {
-    if (!isMobile) return;
-    const el = mobileContainerRef.current;
-    if (!el || typeof ResizeObserver === "undefined") return;
+    const el = gridRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
 
-    const computeItemsPerRow = (width: number) => {
-      const step = MOBILE_CARD_SIZE - MOBILE_OVERLAP;
-      const count = Math.floor((width - MOBILE_OVERLAP) / step);
-      return Math.max(1, count);
-    };
+    const updateWidth = (width: number) => setContainerWidth(width);
 
     const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setItemsPerRow(computeItemsPerRow(entry.contentRect.width));
-      }
+      const entry = entries[0];
+      updateWidth(entry ? entry.contentRect.width : el.getBoundingClientRect().width);
     });
 
     observer.observe(el);
-    setItemsPerRow(computeItemsPerRow(el.getBoundingClientRect().width));
+    updateWidth(el.getBoundingClientRect().width);
 
     return () => observer.disconnect();
-  }, [isMobile]);
+  }, []);
 
+  // Close a tapped popover when pressing anywhere outside the stack
   useEffect(() => {
-    const total = activeTools.length;
-    const numRows = Math.ceil(Math.sqrt(total * 0.8)) || 3;
-    const numCols = Math.ceil(total / numRows) || 5;
+    if (activeId === null) return;
 
-    const cells: { row: number; col: number }[] = [];
-    for (let r = 0; r < numRows; r++) {
-      for (let c = 0; c < numCols; c++) {
-        cells.push({ row: r, col: c });
+    const handleOutsidePointerDown = (event: PointerEvent) => {
+      if (!gridRef.current?.contains(event.target as Node)) {
+        setActiveId(null);
       }
-    }
+    };
 
-    const shuffledCells = [...cells].sort(() => Math.random() - 0.5);
-
-    const generated = activeTools.map((_, index) => {
-      const cell = shuffledCells[index] || { row: index % numRows, col: Math.floor(index / numRows) };
-
-      const colSpacing = 80 / Math.max(1, numCols - 1);
-      const rowSpacing = 75 / Math.max(1, numRows - 1);
-
-      const baseLeft = 5 + cell.col * colSpacing;
-      const leftOffset = Math.random() * 6 - 3;
-      const left = Math.max(2, Math.min(90, baseLeft + leftOffset));
-
-      const baseTop = 5 + cell.row * rowSpacing;
-      const topOffset = Math.random() * 6 - 3;
-      const top = Math.max(2, Math.min(88, baseTop + topOffset));
-
-      const rotate = -20 + Math.random() * 40;
-      return { left, top, rotate };
-    });
-    setPositions(generated);
-  }, [activeTools]);
+    document.addEventListener('pointerdown', handleOutsidePointerDown);
+    return () => document.removeEventListener('pointerdown', handleOutsidePointerDown);
+  }, [activeId]);
 
   useEffect(() => {
-    if (revealed && positions.length > 0 && !mounted) {
-      const raf = requestAnimationFrame(() => setMounted(true));
-      return () => cancelAnimationFrame(raf);
-    }
-  }, [revealed, positions, mounted]);
+    if (activeId === null) return;
 
-  const desktopCards = useMemo(() => {
-    if (!mounted || positions.length === 0) return null;
-    return activeTools.map((tool, index) => (
-      <ToolCard
-        key={tool.id}
-        tool={tool}
-        pos={positions[index] || { left: 10, top: 10, rotate: 0 }}
-        constraintsRef={constraintsRef}
-        enableHover={enableHover}
-      />
-    ));
-  }, [mounted, positions, constraintsRef, enableHover, activeTools]);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setActiveId(null);
+    };
 
-  const mobileRows = useMemo(() => {
-    const rows: ToolItem[][] = [];
-    for (let i = 0; i < activeTools.length; i += itemsPerRow) {
-      rows.push(activeTools.slice(i, i + itemsPerRow));
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeId]);
+
+  const rows = useMemo(() => {
+    if (activeTools.length === 0) return [];
+
+    const rowCount = Math.max(1, Math.ceil(activeTools.length / metrics.maxPerRow));
+    const perRow = Math.max(1, Math.ceil(activeTools.length / rowCount));
+    const nextRows: ToolItem[][] = [];
+
+    for (let i = 0; i < activeTools.length; i += perRow) {
+      nextRows.push(activeTools.slice(i, i + perRow));
     }
-    return rows;
-  }, [itemsPerRow, activeTools]);
+
+    return nextRows;
+  }, [activeTools, metrics.maxPerRow]);
+
+  const toggleActive = (id: ToolItem['id']) => {
+    setActiveId((prev) => (prev === id ? null : id));
+  };
 
   return (
     <section className="mt-32 w-full flex flex-col items-center">
@@ -476,32 +378,88 @@ export default function ToolsIUse({ constraintsRef, revealed = true, tools: sani
         showLink={false}
       />
 
-      {isMobile ? (
-        <div
-          ref={mobileContainerRef}
-          className="mt-16 w-full flex flex-col items-center"
-          style={{ gap: ROW_GAP, paddingTop: ARC_HEIGHT + 8, paddingBottom: 8 }}
-        >
-          {mobileRows.map((row, rowIndex) => (
-            <div key={rowIndex} className="flex items-center">
-              {row.map((tool, posInRow) => (
-                <MobileToolCard
+      <div
+        ref={gridRef}
+        className="mt-14 md:mt-16 w-full flex flex-col items-center"
+        style={{ gap: metrics.rowGap }}
+      >
+        {rows.map((row, rowIndex) => {
+          const layoutWidth =
+            containerWidth > 0 ? containerWidth : metrics.cardSize * metrics.maxPerRow;
+          const rawStep =
+            row.length > 1 ? (layoutWidth - metrics.cardSize) / (row.length - 1) : 0;
+          // Keep a light overlap: never leave a gap, but never crowd the cards either
+          const step = Math.min(rawStep, metrics.cardSize - metrics.overlap);
+          const spacing = step - metrics.cardSize;
+
+          return (
+            <div
+              key={rowIndex}
+              className="flex items-center justify-center"
+              style={{ paddingTop: metrics.arcHeight, paddingBottom: 8 }}
+            >
+              {row.map((tool, index) => {
+              const normalized =
+                row.length > 1
+                  ? (index - (row.length - 1) / 2) / ((row.length - 1) / 2)
+                  : 0;
+              const arcY = -metrics.arcHeight * (1 - normalized * normalized);
+              const rotate = normalized * ARC_MAX_TILT;
+              const isActive = activeId === tool.id;
+              const isHovered = hoveredId === tool.id;
+              const showPopover = isActive || isHovered;
+              const baseZIndex = index % 2 === 0 ? 30 : 10;
+
+              return (
+                <div
                   key={tool.id}
-                  tool={tool}
-                  posInRow={posInRow}
-                  rowLength={row.length}
-                  isRowStart={posInRow === 0}
-                  enableHover={enableHover}
-                />
-              ))}
+                  className="relative shrink-0"
+                  style={{
+                    marginLeft: index === 0 ? 0 : spacing,
+                    transform: `translateY(${arcY}px) rotate(${rotate}deg)`,
+                    zIndex: showPopover ? 500 : baseZIndex,
+                  }}
+                >
+                  <div
+                    tabIndex={0}
+                    role="button"
+                    aria-label={tool.name}
+                    className="relative flex items-center justify-center bg-container rounded-2xl border border-brand-border-container shadow-[0_8px_30px_var(--card-shadow-color)] select-none cursor-pointer transition-transform duration-200 ease-out hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--primary-color)"
+                    style={{ width: metrics.cardSize, height: metrics.cardSize }}
+                    onPointerEnter={(event) => {
+                      if (event.pointerType === 'mouse') setHoveredId(tool.id);
+                    }}
+                    onPointerLeave={(event) => {
+                      if (event.pointerType === 'mouse') setHoveredId(null);
+                    }}
+                    onPointerDown={(event) => {
+                      if (event.pointerType !== 'mouse') toggleActive(tool.id);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        toggleActive(tool.id);
+                      }
+                    }}
+                  >
+                    {tool.icon}
+
+                    <div
+                      className={`pointer-events-none absolute bottom-full left-1/2 mb-2.5 whitespace-nowrap rounded-lg border border-brand-border-container bg-container px-2.5 py-1 text-[11px] font-semibold text-brand-primary shadow-lg transition-opacity duration-150 ${
+                        showPopover ? 'opacity-100' : 'opacity-0'
+                      }`}
+                      style={{ transform: `translateX(-50%) rotate(${-rotate}deg)` }}
+                    >
+                      {tool.name}
+                    </div>
+                  </div>
+                </div>
+              );
+              })}
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="mt-16 relative w-full h-90 sm:h-110 md:h-130 mx-auto pb-15">
-          {desktopCards}
-        </div>
-      )}
+          );
+        })}
+      </div>
     </section>
   );
 }
