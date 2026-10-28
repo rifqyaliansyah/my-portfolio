@@ -16,7 +16,7 @@ export default function SubPageLayout({ children, profile }: SubPageLayoutProps)
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
-    window.scrollTo({ top: 0, left: 0 });
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 
     let timeoutId: number;
     const handleScroll = () => {

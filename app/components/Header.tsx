@@ -1,13 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { MouseEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { scrollToHash } from "@/app/lib/scroll-to-hash";
 
 export default function Header() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [pendingHash, setPendingHash] = useState<string | null>(null);
 
   useEffect(() => {
     // Read theme instantly on mount
@@ -52,6 +55,14 @@ export default function Header() {
     };
   }, [isMobileMenuOpen]);
 
+  useEffect(() => {
+    if (isMobileMenuOpen || !pendingHash) return;
+
+    window.history.pushState(null, "", `/#${pendingHash}`);
+    scrollToHash(pendingHash);
+    setPendingHash(null);
+  }, [isMobileMenuOpen, pendingHash]);
+
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
@@ -69,12 +80,40 @@ export default function Header() {
     { label: "Writing", href: "/writings" },
   ];
 
+  const handleNavClick = (
+    event: MouseEvent<HTMLAnchorElement>,
+    href: string,
+    fromMenu = false
+  ) => {
+    if (fromMenu) {
+      setIsMobileMenuOpen(false);
+    }
+
+    // Let non-hash links and links from other pages navigate normally.
+    if (!href.startsWith("/#") || window.location.pathname !== "/") {
+      return;
+    }
+
+    event.preventDefault();
+    const hash = href.slice(2);
+
+    if (fromMenu) {
+      // Wait until the mobile menu is closed (body scroll unlocked) before scrolling.
+      setPendingHash(hash);
+      return;
+    }
+
+    window.history.pushState(null, "", href);
+    scrollToHash(hash);
+  };
+
   const desktopNavLinks = (
     <nav className="hidden md:flex items-center gap-6">
       {navItems.map((item) => (
         <a
           key={item.href}
           href={item.href}
+          onClick={(event) => handleNavClick(event, item.href)}
           className="text-[15px] lg:text-[16px] font-medium text-brand-secondary hover:text-brand-primary transition-colors duration-200 py-1"
         >
           {item.label}
@@ -236,7 +275,7 @@ export default function Header() {
                 <motion.a
                   key={item.href}
                   href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={(event) => handleNavClick(event, item.href, true)}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.08 + idx * 0.06, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}

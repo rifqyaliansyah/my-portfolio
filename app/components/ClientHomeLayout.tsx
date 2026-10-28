@@ -11,6 +11,7 @@ import ToolsIUse from "./ToolsIUse";
 import Footer from "./Footer";
 import BackToTop from "./BackToTop";
 import { LandingPageData } from "@/app/types/sanity";
+import { scrollToHash } from "@/app/lib/scroll-to-hash";
 
 interface ClientHomeLayoutProps {
   data: LandingPageData | null;
@@ -21,7 +22,15 @@ export default function ClientHomeLayout({ data }: ClientHomeLayoutProps) {
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
-    window.scrollTo({ top: 0, left: 0 });
+    let frameId: number | null = null;
+    const hash = window.location.hash.slice(1);
+
+    if (hash) {
+      // Browser sudah jump ke anchor saat load; ratakan ulang posisinya setelah layout siap.
+      frameId = window.requestAnimationFrame(() => scrollToHash(hash, "instant"));
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }
 
     let timeoutId: number;
     const handleScroll = () => {
@@ -35,6 +44,7 @@ export default function ClientHomeLayout({ data }: ClientHomeLayoutProps) {
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
       window.removeEventListener("scroll", handleScroll);
       window.clearTimeout(timeoutId);
     };

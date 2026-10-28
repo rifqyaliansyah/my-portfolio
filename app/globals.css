@@ -114,6 +114,14 @@ html {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
   transition: scrollbar-color 300ms ease;
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 html.is-scrolling {
