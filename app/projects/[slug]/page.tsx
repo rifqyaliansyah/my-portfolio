@@ -10,6 +10,7 @@ import CustomPortableText from "@/app/components/CustomPortableText";
 import BackButton from "@/app/components/BackButton";
 import ProjectGallery, { GalleryImage } from "@/app/components/ProjectGallery";
 import Card from "@/app/components/Card";
+import { seededShuffle } from "@/app/lib/seeded-shuffle";
 
 interface ProjectDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -132,10 +133,9 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     }
   }
 
-  // More Projects (Filter out current project, take up to 3)
-  const moreProjects = allProjects
-    .filter((p) => p.slug?.current !== slug)
-    .slice(0, 3);
+  // More Projects (Filter out current project, shuffle deterministically, take up to 3)
+  const otherProjects = allProjects.filter((p) => p.slug?.current !== slug);
+  const moreProjects = seededShuffle(otherProjects, slug).slice(0, 3);
 
   return (
     <SubPageLayout profile={profile}>

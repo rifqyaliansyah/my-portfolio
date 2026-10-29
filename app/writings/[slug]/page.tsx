@@ -11,6 +11,7 @@ import CustomPortableText from "@/app/components/CustomPortableText";
 import CodeBlock from "@/app/components/CodeBlock";
 import BackButton from "@/app/components/BackButton";
 import Card from "@/app/components/Card";
+import { seededShuffle } from "@/app/lib/seeded-shuffle";
 
 interface WritingDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -101,10 +102,9 @@ export default async function WritingDetailPage({ params }: WritingDetailPagePro
     ? urlFor(article.coverImage).width(1200).height(600).auto("format").url()
     : null;
 
-  // More Writings (Filter out current article, take up to 3)
-  const moreWritings = allWritings
-    .filter((w) => w.slug?.current !== slug)
-    .slice(0, 3);
+  // More Writings (Filter out current article, shuffle deterministically, take up to 3)
+  const otherWritings = allWritings.filter((w) => w.slug?.current !== slug);
+  const moreWritings = seededShuffle(otherWritings, slug).slice(0, 3);
 
   return (
     <SubPageLayout profile={profile}>
