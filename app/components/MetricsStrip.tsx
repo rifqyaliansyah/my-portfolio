@@ -26,37 +26,21 @@ export default function MetricsStrip({ stats }: MetricsStripProps) {
     const [progress, setProgress] = useState(1);
 
     useEffect(() => {
-        const node = containerRef.current;
-        if (!node) return;
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
         let frame = 0;
+        const startTime = performance.now();
 
-        const run = () => {
-            const startTime = performance.now();
-            const tick = (now: number) => {
-                const t = Math.min((now - startTime) / COUNT_DURATION, 1);
-                setProgress(easeOutCubic(t));
-                if (t < 1) frame = requestAnimationFrame(tick);
-            };
-            setProgress(0);
-            frame = requestAnimationFrame(tick);
+        const tick = (now: number) => {
+            const t = Math.min((now - startTime) / COUNT_DURATION, 1);
+            setProgress(easeOutCubic(t));
+            if (t < 1) frame = requestAnimationFrame(tick);
         };
 
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    observer.disconnect();
-                    run();
-                }
-            },
-            { threshold: 0.4 }
-        );
-
-        observer.observe(node);
+        setProgress(0);
+        frame = requestAnimationFrame(tick);
 
         return () => {
-            observer.disconnect();
             cancelAnimationFrame(frame);
         };
     }, []);
