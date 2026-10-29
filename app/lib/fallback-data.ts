@@ -17,28 +17,13 @@ export const fallbackHeroPreviewImages = [
   { src: "/example.jpg", alt: "Mobile App Development Certificate" },
 ];
 
-export const fallbackTestimonials = [
-  {
-    id: "1",
-    quote: "Rifqy selalu bisa nerjemahin requirement yang ambigu jadi UI yang rapi dan gampang dipakai.",
-    name: "Dimas Pratama",
-    role: "Product Manager",
-    avatar: null,
-  },
-  {
-    id: "2",
-    quote: "Kerja bareng Rifqy enak banget, komunikasinya jelas dan hasilnya selalu di atas ekspektasi.",
-    name: "Sarah Amelia",
-    role: "UI/UX Designer",
-    avatar: null,
-  },
-  {
-    id: "3",
-    quote: "Detail banget soal micro-interaction, portofolionya juga mencerminkan itu.",
-    name: "Bagas Nugraha",
-    role: "Frontend Lead",
-    avatar: null,
-  },
+export const fallbackStats = [
+  { id: "projects", value: 12, suffix: "+", label: "Projects Shipped" },
+  { id: "apis", value: 10, suffix: "+", label: "REST APIs Built" },
+  { id: "years", value: 2, suffix: "+", label: "Years Building" },
+  { id: "certifications", value: 6, suffix: "", label: "Certifications" },
+  { id: "technologies", value: 12, suffix: "+", label: "Technologies" },
+  { id: "internships", value: 1, suffix: "", label: "Internship" },
 ];
 
 export const fallbackProjects = [

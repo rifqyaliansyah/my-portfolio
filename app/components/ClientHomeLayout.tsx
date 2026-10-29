@@ -55,7 +55,7 @@ export default function ClientHomeLayout({ data }: ClientHomeLayoutProps) {
       <main className="w-full max-w-280 mx-auto my-0 md:my-8 lg:my-16 bg-container rounded-none md:rounded-[48px] lg:rounded-[64px] border border-brand-border-container p-6 sm:p-10 md:p-12 lg:p-20 flex flex-col transition-all duration-300 relative overflow-hidden">
         <Header />
 
-        <Hero profile={data?.profile} testimonials={data?.testimonials} />
+        <Hero profile={data?.profile} />
 
         <Projects projects={data?.featuredProjects} />
 

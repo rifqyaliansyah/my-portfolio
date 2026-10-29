@@ -1,8 +1,8 @@
 import Image from "next/image";
 import ImageStack from "./ImageStack";
-import Testimonials from "./Testimonials";
+import MetricsStrip from "./MetricsStrip";
 import Avatar from "./Avatar";
-import { ProfileData, TestimonialData, QuickSkillItem } from "@/app/types/sanity";
+import { ProfileData, QuickSkillItem } from "@/app/types/sanity";
 import { urlFor } from "@/app/lib/sanity";
 import { fallbackSkills, fallbackEmail } from "@/app/lib/fallback-data";
 
@@ -57,10 +57,9 @@ const defaultSkillIcon = (
 
 interface HeroProps {
   profile?: ProfileData | null;
-  testimonials?: TestimonialData[];
 }
 
-export default function Hero({ profile, testimonials }: HeroProps) {
+export default function Hero({ profile }: HeroProps) {
   const name = profile?.name || "Rifqy Aliansyah";
   const avatarUrl = profile?.avatar ? urlFor(profile.avatar).width(140).height(140).url() : null;
   const email = profile?.email || fallbackEmail;
@@ -102,7 +101,7 @@ export default function Hero({ profile, testimonials }: HeroProps) {
     if (headline.includes("Part of")) {
       const [beforePart, afterPart] = headline.split("Part of");
       const trimmedBefore = beforePart.trim();
-      
+
       if (trimmedBefore.includes(",")) {
         const commaIndex = trimmedBefore.indexOf(",");
         const firstLine = trimmedBefore.substring(0, commaIndex + 1);
@@ -220,14 +219,13 @@ export default function Hero({ profile, testimonials }: HeroProps) {
         </div>
 
         <div className="mt-10 md:mt-14 w-full">
-          <Testimonials items={testimonials} />
+          <MetricsStrip />
         </div>
       </div>
 
-      <div className="hidden lg:block shrink-0">
+      <div className="w-full lg:w-auto shrink-0">
         <ImageStack previewImages={profile?.heroPreviewImages} />
       </div>
     </section>
   );
 }
-

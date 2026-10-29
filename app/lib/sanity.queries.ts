@@ -175,7 +175,7 @@ export const LANDING_PAGE_QUERY = `
     publishedAt,
     externalUrl
   },
-  "testimonials": *[_type == "testimonial"] | order(order asc) {
+    "testimonials": *[_type == "testimonial"] | order(order asc) {
     _id,
     name,
     role,
