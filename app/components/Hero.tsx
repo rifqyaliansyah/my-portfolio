@@ -64,6 +64,13 @@ export default function Hero({ profile }: HeroProps) {
   const avatarUrl = profile?.avatar ? urlFor(profile.avatar).width(140).height(140).url() : null;
   const email = profile?.email || fallbackEmail;
 
+  const stats = profile?.stats?.map((s, i) => ({
+    id: s._key || `${i}`,
+    label: s.label,
+    value: s.value,
+    suffix: s.suffix,
+  }));
+
   // Normalize quickSkills items (handles both string and QuickSkillItem object)
   const rawSkills = profile?.quickSkills && profile.quickSkills.length > 0 ? profile.quickSkills : fallbackSkills;
   const skillsList: QuickSkillItem[] = rawSkills
@@ -219,7 +226,7 @@ export default function Hero({ profile }: HeroProps) {
         </div>
 
         <div className="mt-10 md:mt-14 w-full">
-          <MetricsStrip />
+          <MetricsStrip stats={stats} />
         </div>
       </div>
 

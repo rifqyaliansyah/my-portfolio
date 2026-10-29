@@ -11,7 +11,6 @@ export async function getLandingPageData(): Promise<LandingPageData> {
       profile: null,
       featuredProjects: [],
       writings: [],
-      testimonials: [],
       tools: [],
     };
   }

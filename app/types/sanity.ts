@@ -26,12 +26,20 @@ export interface ProfileHighlight {
   label: string
 }
 
+export interface ProfileStat {
+  _key?: string
+  label: string
+  value: number
+  suffix?: string
+}
+
 export interface ProfileData {
   _id: string
   name: string
   headline: string
   avatar?: SanityImage
   quickSkills?: (QuickSkillItem | string)[]
+  stats?: ProfileStat[]
   heroPreviewImages?: SanityImage[]
   aboutHeadline?: string
   aboutBio?: string
@@ -71,15 +79,6 @@ export interface WritingData {
   externalUrl?: string
 }
 
-export interface TestimonialData {
-  _id: string
-  name: string
-  role: string
-  quote: string
-  avatar?: SanityImage
-  order?: number
-}
-
 export interface ToolData {
   _id: string
   name: string
@@ -94,6 +93,5 @@ export interface LandingPageData {
   featuredProjects: ProjectData[]
   allProjects?: ProjectData[]
   writings: WritingData[]
-  testimonials: TestimonialData[]
   tools: ToolData[]
 }

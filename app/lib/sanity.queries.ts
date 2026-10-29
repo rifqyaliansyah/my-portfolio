@@ -109,17 +109,6 @@ export const WRITING_BY_SLUG_QUERY = `
   }
 `
 
-export const TESTIMONIALS_QUERY = `
-  *[_type == "testimonial"] | order(order asc, _createdAt asc) {
-    _id,
-    name,
-    role,
-    quote,
-    avatar,
-    order
-  }
-`
-
 export const TOOLS_QUERY = `
   *[_type == "tool"] | order(order asc, _createdAt asc) {
     _id,
@@ -142,6 +131,12 @@ export const LANDING_PAGE_QUERY = `
       _key,
       name,
       icon
+    },
+    stats[] {
+      _key,
+      label,
+      value,
+      suffix
     },
     heroPreviewImages,
     aboutHeadline,
