@@ -4,7 +4,6 @@ import MetricsStrip from "./MetricsStrip";
 import Avatar from "./Avatar";
 import { ProfileData, QuickSkillItem } from "@/app/types/sanity";
 import { urlFor } from "@/app/lib/sanity";
-import { fallbackSkills, fallbackEmail } from "@/app/lib/fallback-data";
 
 const skillIcons: Record<string, React.ReactNode> = {
   "React / Next.js": (
@@ -60,19 +59,21 @@ interface HeroProps {
 }
 
 export default function Hero({ profile }: HeroProps) {
-  const name = profile?.name || "Rifqy Aliansyah";
-  const avatarUrl = profile?.avatar ? urlFor(profile.avatar).width(140).height(140).url() : null;
-  const email = profile?.email || fallbackEmail;
+  if (!profile) return null;
 
-  const stats = profile?.stats?.map((s, i) => ({
+  const name = profile.name;
+  const avatarUrl = profile.avatar ? urlFor(profile.avatar).width(140).height(140).url() : null;
+  const email = profile.email;
+
+  const stats = profile.stats?.map((s, i) => ({
     id: s._key || `${i}`,
     label: s.label,
     value: s.value,
     suffix: s.suffix,
-  }));
+  })) ?? [];
 
   // Normalize quickSkills items (handles both string and QuickSkillItem object)
-  const rawSkills = profile?.quickSkills && profile.quickSkills.length > 0 ? profile.quickSkills : fallbackSkills;
+  const rawSkills = profile.quickSkills ?? [];
   const skillsList: QuickSkillItem[] = rawSkills
     .filter(Boolean)
     .map((s, i) => {
@@ -82,27 +83,22 @@ export default function Hero({ profile }: HeroProps) {
       if (typeof s === "object" && s !== null) {
         return {
           _key: s._key || `${i}`,
-          name: s.name || "Skill",
+          name: s.name,
           icon: s.icon,
         };
       }
       return { _key: `${i}`, name: String(s) };
-    });
+    })
+    .filter((s) => Boolean(s.name));
 
-  const headline = profile?.headline;
+  const previewImages = profile.heroPreviewImages ?? [];
+  const headline = profile.headline;
+  const hasContent = Boolean(name || avatarUrl || headline || email || skillsList.length > 0 || stats.length > 0 || previewImages.length > 0);
+
+  if (!hasContent) return null;
 
   const renderHeadline = () => {
-    if (!headline) {
-      return (
-        <>
-          Design Engineer who ships products,
-          <br />
-          not just mockups. Part of
-          <br />
-          <span className="text-brand-secondary">Google Indonesia</span>
-        </>
-      );
-    }
+    if (!headline) return null;
 
     // If headline contains "Part of", format it nicely with the colored span and proper line breaks
     if (headline.includes("Part of")) {
@@ -140,99 +136,113 @@ export default function Hero({ profile }: HeroProps) {
   return (
     <section className="flex flex-col lg:flex-row items-start justify-between mt-10 md:mt-16 gap-8 md:gap-12">
       <div className="flex flex-col items-start w-full lg:w-auto min-w-0 flex-1">
-        <div className="flex items-center gap-4 sm:gap-6">
-          <div
-            className="flex items-center justify-center rounded-xl shrink-0"
+        {(name || avatarUrl) && (
+          <div className="flex items-center gap-4 sm:gap-6">
+            <div
+              className="flex items-center justify-center rounded-xl shrink-0"
+              style={{
+                width: 80,
+                height: 80,
+                backgroundColor: "rgba(242, 240, 239, 0.2)",
+                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
+              }}
+            >
+              <Avatar
+                src={avatarUrl}
+                name={name || "Avatar"}
+                size={70}
+                roundedClassName="rounded-xl"
+                priority
+              />
+            </div>
+
+            {name && (
+              <h1 className="text-[24px] sm:text-[28px] md:text-[32px] font-semibold text-brand-primary leading-tight">
+                {name}
+              </h1>
+            )}
+          </div>
+        )}
+
+        {headline && (
+          <p
+            className="mt-5 md:mt-6 text-[18px] sm:text-[20px] md:text-[24px] leading-6.5 sm:leading-7 md:leading-8 font-medium text-brand-primary text-left"
+          >
+            {renderHeadline()}
+          </p>
+        )}
+
+        {email && (
+          <a
+            href={`mailto:${email}`}
+            className="mt-5 md:mt-6 inline-flex items-center justify-center gap-2 rounded-full font-semibold select-none hover:opacity-90 transition-opacity"
             style={{
-              width: 80,
-              height: 80,
-              backgroundColor: "rgba(242, 240, 239, 0.2)",
-              boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
+              width: 156,
+              height: 45,
+              paddingTop: 4,
+              paddingBottom: 4,
+              background: "linear-gradient(to top, #252525 0%, #252525 85%, #4a4a4a 100%)",
+              color: "#F2F0EF",
+              fontSize: 12,
+              lineHeight: "32px",
             }}
           >
-            <Avatar
-              src={avatarUrl}
-              name={name}
-              size={70}
-              roundedClassName="rounded-xl"
-              priority
-            />
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            Discuss a project
+          </a>
+        )}
+
+        {skillsList.length > 0 && (
+          <div className="mt-6 md:mt-8 flex flex-wrap gap-2.5 md:gap-3 items-start w-full md:max-w-104.25">
+            {skillsList.map((skill, index) => {
+              const skillName = skill.name;
+              const customIconUrl = skill.icon ? urlFor(skill.icon).width(28).height(28).url() : null;
+
+              return (
+                <div
+                  key={skill._key || `${skillName}-${index}`}
+                  className="skill-badge inline-flex items-center rounded-full cursor-default select-none text-brand-secondary gap-2 px-3.5 py-1"
+                  style={{
+                    minHeight: 33,
+                    border: "1px solid rgba(74, 74, 74, 0.1)",
+                    boxShadow: "0 1px 4px rgba(0, 0, 0, 0.04)",
+                    fontSize: 11,
+                    fontWeight: 600,
+                    lineHeight: "24px",
+                  }}
+                >
+                  {customIconUrl ? (
+                    <Image
+                      src={customIconUrl}
+                      alt={skillName}
+                      width={14}
+                      height={14}
+                      className="w-3.5 h-3.5 object-contain shrink-0"
+                    />
+                  ) : (
+                    skillIcons[skillName] || defaultSkillIcon
+                  )}
+                  <span className="truncate">{skillName}</span>
+                </div>
+              );
+            })}
           </div>
+        )}
 
-          <h1 className="text-[24px] sm:text-[28px] md:text-[32px] font-semibold text-brand-primary leading-tight">
-            {name}
-          </h1>
-        </div>
-
-        <p
-          className="mt-5 md:mt-6 text-[18px] sm:text-[20px] md:text-[24px] leading-6.5 sm:leading-7 md:leading-8 font-medium text-brand-primary text-left"
-        >
-          {renderHeadline()}
-        </p>
-
-        <a
-          href={`mailto:${email}`}
-          className="mt-5 md:mt-6 inline-flex items-center justify-center gap-2 rounded-full font-semibold select-none hover:opacity-90 transition-opacity"
-          style={{
-            width: 156,
-            height: 45,
-            paddingTop: 4,
-            paddingBottom: 4,
-            background: "linear-gradient(to top, #252525 0%, #252525 85%, #4a4a4a 100%)",
-            color: "#F2F0EF",
-            fontSize: 12,
-            lineHeight: "32px",
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-          Discuss a project
-        </a>
-
-        <div className="mt-6 md:mt-8 flex flex-wrap gap-2.5 md:gap-3 items-start w-full md:max-w-104.25">
-          {skillsList.map((skill, index) => {
-            const skillName = skill.name;
-            const customIconUrl = skill.icon ? urlFor(skill.icon).width(28).height(28).url() : null;
-
-            return (
-              <div
-                key={skill._key || `${skillName}-${index}`}
-                className="skill-badge inline-flex items-center rounded-full cursor-default select-none text-brand-secondary gap-2 px-3.5 py-1"
-                style={{
-                  minHeight: 33,
-                  border: "1px solid rgba(74, 74, 74, 0.1)",
-                  boxShadow: "0 1px 4px rgba(0, 0, 0, 0.04)",
-                  fontSize: 11,
-                  fontWeight: 600,
-                  lineHeight: "24px",
-                }}
-              >
-                {customIconUrl ? (
-                  <Image
-                    src={customIconUrl}
-                    alt={skillName}
-                    width={14}
-                    height={14}
-                    className="w-3.5 h-3.5 object-contain shrink-0"
-                  />
-                ) : (
-                  skillIcons[skillName] || defaultSkillIcon
-                )}
-                <span className="truncate">{skillName}</span>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="mt-10 md:mt-14 w-full">
-          <MetricsStrip stats={stats} />
-        </div>
+        {stats.length > 0 && (
+          <div className="mt-10 md:mt-14 w-full">
+            <MetricsStrip stats={stats} />
+          </div>
+        )}
       </div>
 
-      <div className="w-full lg:w-auto shrink-0">
-        <ImageStack previewImages={profile?.heroPreviewImages} />
-      </div>
+      {previewImages.length > 0 && (
+        <div className="w-full lg:w-auto shrink-0">
+          <ImageStack previewImages={previewImages} />
+        </div>
+      )}
     </section>
   );
 }

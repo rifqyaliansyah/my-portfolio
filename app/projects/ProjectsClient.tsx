@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Card from "@/app/components/Card";
+import EmptyState from "@/app/components/EmptyState";
 import { ProjectData } from "@/app/types/sanity";
 import { urlFor } from "@/app/lib/sanity";
 
@@ -34,6 +35,16 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
       return matchesTag && matchesSearch;
     });
   }, [projects, selectedTag, searchQuery]);
+
+  if (projects.length === 0) {
+    return (
+      <EmptyState
+        className="mt-8"
+        title="No projects yet"
+        description="Projects will appear here once they are published."
+      />
+    );
+  }
 
   return (
     <div className="w-full flex flex-col">
@@ -93,7 +104,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
           {filteredProjects.map((project, idx) => {
             const imageSrc = project.coverImage
               ? urlFor(project.coverImage).width(608).height(400).auto("format").url()
-              : (project as any).imageSrc || "/example.jpg";
+              : undefined;
             const href = project.slug?.current
               ? `/projects/${project.slug.current}`
               : project.projectUrl || "/projects";

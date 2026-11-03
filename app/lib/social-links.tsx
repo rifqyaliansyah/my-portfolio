@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { defaultSocialLinks } from "./fallback-data";
 import { urlFor } from "./sanity";
 import type { ProfileData } from "../types/sanity";
 
@@ -98,10 +97,5 @@ export function resolveSocialLinks(profile?: ProfileData | null): ResolvedSocial
       });
   }
 
-  return defaultSocialLinks.map((item, index) => ({
-    key: `${item.label}-${index}`,
-    icon: socialIconsMap[item.platform]?.icon || defaultLinkIcon,
-    href: item.href,
-    label: socialIconsMap[item.platform]?.label || item.label,
-  }));
+  return [];
 }

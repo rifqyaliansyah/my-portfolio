@@ -1,5 +1,4 @@
 import { ProfileData } from '@/app/types/sanity';
-import { fallbackHighlights, fallbackEmail } from '@/app/lib/fallback-data';
 
 const BriefcaseIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -40,96 +39,104 @@ interface AboutMeProps {
 }
 
 export default function AboutMe({ profile }: AboutMeProps) {
-  const headline = profile?.aboutHeadline || "Design is how I solve problems and create impact.";
-  const bio = profile?.aboutBio || "I'm a multidisciplinary designer who loves crafting meaningful and functional digital experiences. With a keen eye for detail and a passion for design, I help brands and products connect with their audience.";
-  const email = profile?.email || fallbackEmail;
-  
-  const defaultHighlightsList = fallbackHighlights.map((h) => ({
-    icon: highlightIconsMap[h.iconName] || <BriefcaseIcon />,
-    label: h.label,
-  }));
+  const headline = profile?.aboutHeadline;
+  const bio = profile?.aboutBio;
+  const email = profile?.email;
 
-  const highlights = profile?.highlights && profile.highlights.length > 0
-    ? profile.highlights.map((h, i) => {
-        let iconNode = h.icon ? highlightIconsMap[h.icon] : null;
-        if (!iconNode) {
-          if (i === 0) iconNode = <BriefcaseIcon />;
-          else if (i === 1) iconNode = <MapPinIcon />;
-          else iconNode = <SendIcon />;
-        }
-        return {
-          icon: iconNode,
-          label: h.label,
-        };
-      })
-    : defaultHighlightsList;
+  const highlights = (profile?.highlights ?? [])
+    .filter((h) => Boolean(h.label))
+    .map((h, i) => {
+      let iconNode = h.icon ? highlightIconsMap[h.icon] : null;
+      if (!iconNode) {
+        if (i === 0) iconNode = <BriefcaseIcon />;
+        else if (i === 1) iconNode = <MapPinIcon />;
+        else iconNode = <SendIcon />;
+      }
+      return {
+        icon: iconNode,
+        label: h.label,
+      };
+    });
+
+  const hasLeftContent = Boolean(headline || bio || email);
+
+  if (!hasLeftContent && highlights.length === 0) return null;
 
   return (
     <section id="about" className="mt-32 w-full">
       <div className="w-full bg-page rounded-3xl p-8 sm:p-10 md:p-12 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-12 lg:gap-16">
-        <div className="flex-1 max-w-150 flex flex-col items-start">
-          <span className="text-[12px] font-semibold tracking-wider text-brand-secondary uppercase">
-            About Me
-          </span>
-          <h2 className="text-[32px] sm:text-[40px] md:text-[30px] font-bold leading-tight text-brand-primary mt-4">
-            {headline}
-          </h2>
-          <p className="text-[15px] md:text-[16px] leading-6.5 md:leading-7 text-brand-secondary mt-6 font-medium">
-            {bio}
-          </p>
+        {hasLeftContent && (
+          <div className="flex-1 max-w-150 flex flex-col items-start">
+            <span className="text-[12px] font-semibold tracking-wider text-brand-secondary uppercase">
+              About Me
+            </span>
+            {headline && (
+              <h2 className="text-[32px] sm:text-[40px] md:text-[30px] font-bold leading-tight text-brand-primary mt-4">
+                {headline}
+              </h2>
+            )}
+            {bio && (
+              <p className="text-[15px] md:text-[16px] leading-6.5 md:leading-7 text-brand-secondary mt-6 font-medium">
+                {bio}
+              </p>
+            )}
 
-          <a
-            href={`mailto:${email}`}
-            className="mt-8 inline-flex items-center justify-center rounded-full font-semibold select-none hover:opacity-90 transition-opacity"
-            style={{
-              width: 150,
-              height: 45,
-              paddingTop: 4,
-              paddingBottom: 4,
-              background: "linear-gradient(to top, #252525 0%, #252525 85%, #4a4a4a 100%)",
-              color: "#F2F0EF",
-              fontSize: 12,
-              lineHeight: "32px",
-            }}
-          >
-            Discuss a project
-          </a>
-        </div>
+            {email && (
+              <a
+                href={`mailto:${email}`}
+                className="mt-8 inline-flex items-center justify-center rounded-full font-semibold select-none hover:opacity-90 transition-opacity"
+                style={{
+                  width: 150,
+                  height: 45,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  background: "linear-gradient(to top, #252525 0%, #252525 85%, #4a4a4a 100%)",
+                  color: "#F2F0EF",
+                  fontSize: 12,
+                  lineHeight: "32px",
+                }}
+              >
+                Discuss a project
+              </a>
+            )}
+          </div>
+        )}
 
-        <div className="w-full lg:w-auto lg:min-w-90 flex justify-start lg:justify-end">
-          <div className="flex gap-4">
-            <div className="flex flex-col items-center" style={{ width: 14 }}>
-              {highlights.map((item, index) => (
-                <div key={index} className="flex flex-col items-center">
-                  <div style={{ paddingTop: 12, paddingBottom: 12 }}>
-                    {item.icon}
+        {highlights.length > 0 && (
+          <div className="w-full lg:w-auto lg:min-w-90 flex justify-start lg:justify-end">
+            <div className="flex gap-4">
+              <div className="flex flex-col items-center" style={{ width: 14 }}>
+                {highlights.map((item, index) => (
+                  <div key={index} className="flex flex-col items-center">
+                    <div style={{ paddingTop: 12, paddingBottom: 12 }}>
+                      {item.icon}
+                    </div>
+                    {index < highlights.length - 1 && (
+                      <svg width="2" height="14" style={{ display: 'block', overflow: 'visible' }}>
+                        <line x1="1" y1="0" x2="1" y2="14" stroke="currentColor" strokeWidth="1" strokeOpacity="0.25" />
+                      </svg>
+                    )}
                   </div>
-                  {index < highlights.length - 1 && (
-                    <svg width="2" height="14" style={{ display: 'block', overflow: 'visible' }}>
-                      <line x1="1" y1="0" x2="1" y2="14" stroke="currentColor" strokeWidth="1" strokeOpacity="0.25" />
-                    </svg>
-                  )}
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            <div className="flex flex-col">
-              {highlights.map((item, index) => (
-                <div key={index} className="flex flex-col">
-                  <span
-                    className="flex items-center text-[13px] md:text-[14px] font-semibold text-brand-primary"
-                    style={{ height: 18 + 24, minHeight: 18 + 24 }}
-                  >
-                    {item.label}
-                  </span>
-                  {index < highlights.length - 1 && <div style={{ height: 14 }} />}
-                </div>
-              ))}
+              <div className="flex flex-col">
+                {highlights.map((item, index) => (
+                  <div key={index} className="flex flex-col">
+                    <span
+                      className="flex items-center text-[13px] md:text-[14px] font-semibold text-brand-primary"
+                      style={{ height: 18 + 24, minHeight: 18 + 24 }}
+                    >
+                      {item.label}
+                    </span>
+                    {index < highlights.length - 1 && <div style={{ height: 14 }} />}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
 }
-

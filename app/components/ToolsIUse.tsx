@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Title from './Title';
+import EmptyState from './EmptyState';
 
 const FigmaIcon = () => (
   <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
@@ -150,6 +151,15 @@ const LinearIcon = () => (
   </svg>
 );
 
+const GenericToolIcon = () => (
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 md:w-12 md:h-12">
+    <rect x="6" y="6" width="28" height="28" rx="8" stroke="var(--primary-color)" strokeWidth="2" />
+    <path d="M16 15L12 20L16 25" stroke="var(--primary-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M24 15L28 20L24 25" stroke="var(--primary-color)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M21 13L19 27" stroke="var(--primary-color)" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
 import Image from 'next/image';
 import { ToolData } from '@/app/types/sanity';
 import { urlFor } from '@/app/lib/sanity';
@@ -182,25 +192,6 @@ interface ToolItem {
   name: string;
   icon: React.ReactNode;
 }
-
-const defaultTools: ToolItem[] = [
-  { id: 1, name: 'Figma', icon: <FigmaIcon /> },
-  { id: 2, name: 'CleanShot', icon: <CleanShotIcon /> },
-  { id: 3, name: 'Avatar', icon: <AvatarIcon /> },
-  { id: 4, name: 'DaVinci', icon: <DaVinciIcon /> },
-  { id: 5, name: 'Obsidian', icon: <ObsidianIcon /> },
-  { id: 6, name: 'Cube', icon: <CubeIcon /> },
-  { id: 7, name: 'Raycast', icon: <RaycastIcon /> },
-  { id: 8, name: 'Arc', icon: <ArcIcon /> },
-  { id: 9, name: 'VS Code', icon: <VSCodeIcon /> },
-  { id: 10, name: 'Notion', icon: <NotionIcon /> },
-  { id: 11, name: 'React / Next.js', icon: <NextJsIcon /> },
-  { id: 12, name: 'Spotify', icon: <SpotifyIcon /> },
-  { id: 13, name: 'Slack', icon: <SlackIcon /> },
-  { id: 14, name: 'Git', icon: <GitIcon /> },
-  { id: 15, name: 'Tailwind CSS', icon: <TailwindIcon /> },
-  { id: 16, name: 'Linear', icon: <LinearIcon /> },
-];
 
 interface LayoutMetrics {
   cardSize: number;
@@ -251,47 +242,47 @@ interface ToolsIUseProps {
 export default function ToolsIUse({ tools: sanityTools }: ToolsIUseProps) {
   const activeTools: ToolItem[] = useMemo(() => {
     if (!sanityTools || sanityTools.length === 0) {
-      return defaultTools;
+      return [];
     }
-    // Map sanity tools to visual tool cards with correct priority
-    return sanityTools.map((t, idx) => {
-      const fallbackTool = defaultTools[idx % defaultTools.length];
-      let icon: React.ReactNode = null;
+    return sanityTools
+      .filter((t) => Boolean(t.name))
+      .map((t, idx) => {
+        let icon: React.ReactNode = null;
 
-      // 1. Primary: Uploaded Sanity icon
-      if (t.icon && t.icon.asset) {
-        try {
-          icon = (
-            <Image
-              src={urlFor(t.icon).width(48).height(48).auto('format').url()}
-              alt={t.name || fallbackTool.name}
-              width={40}
-              height={40}
-              draggable={false}
-              className="w-10 h-10 md:w-12 md:h-12 object-contain pointer-events-none select-none"
-            />
-          );
-        } catch {
-          icon = null;
+        // 1. Primary: Uploaded Sanity icon
+        if (t.icon && t.icon.asset) {
+          try {
+            icon = (
+              <Image
+                src={urlFor(t.icon).width(48).height(48).auto('format').url()}
+                alt={t.name}
+                width={40}
+                height={40}
+                draggable={false}
+                className="w-10 h-10 md:w-12 md:h-12 object-contain pointer-events-none select-none"
+              />
+            );
+          } catch {
+            icon = null;
+          }
         }
-      }
 
-      // 2. Fallback 1: Predefined SVG icon by tool name
-      if (!icon && t.name && toolIconsByName[t.name]) {
-        icon = toolIconsByName[t.name];
-      }
+        // 2. Predefined SVG icon by tool name
+        if (!icon && toolIconsByName[t.name]) {
+          icon = toolIconsByName[t.name];
+        }
 
-      // 3. Fallback 2: Default placeholder icon
-      if (!icon) {
-        icon = fallbackTool.icon;
-      }
+        // 3. Neutral placeholder icon when no icon is available
+        if (!icon) {
+          icon = <GenericToolIcon />;
+        }
 
-      return {
-        id: t._id || idx + 1,
-        name: t.name || fallbackTool.name,
-        icon,
-      };
-    });
+        return {
+          id: t._id || idx + 1,
+          name: t.name,
+          icon,
+        };
+      });
   }, [sanityTools]);
 
   const [metrics, setMetrics] = useState<LayoutMetrics>(MOBILE_METRICS);
@@ -378,11 +369,12 @@ export default function ToolsIUse({ tools: sanityTools }: ToolsIUseProps) {
         showLink={false}
       />
 
-      <div
-        ref={gridRef}
-        className="mt-14 md:mt-16 w-full flex flex-col items-center"
-        style={{ gap: metrics.rowGap }}
-      >
+      {activeTools.length > 0 ? (
+        <div
+          ref={gridRef}
+          className="mt-14 md:mt-16 w-full flex flex-col items-center"
+          style={{ gap: metrics.rowGap }}
+        >
         {rows.map((row, rowIndex) => {
           const layoutWidth =
             containerWidth > 0 ? containerWidth : metrics.cardSize * metrics.maxPerRow;
@@ -459,7 +451,14 @@ export default function ToolsIUse({ tools: sanityTools }: ToolsIUseProps) {
             </div>
           );
         })}
-      </div>
+        </div>
+      ) : (
+        <EmptyState
+          className="mt-10 md:mt-12"
+          title="No tech stack yet"
+          description="The tools and technologies will appear here once they are added."
+        />
+      )}
     </section>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { fallbackStats } from "@/app/lib/fallback-data";
 
 export interface StatItem {
     id: string;
@@ -21,11 +20,12 @@ function easeOutCubic(t: number) {
 }
 
 export default function MetricsStrip({ stats }: MetricsStripProps) {
-    const items: StatItem[] = stats && stats.length > 0 ? stats : fallbackStats;
+    const items: StatItem[] = stats ?? [];
     const containerRef = useRef<HTMLDivElement>(null);
     const [progress, setProgress] = useState(1);
 
     useEffect(() => {
+        if (!stats || stats.length === 0) return;
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
         let frame = 0;
@@ -43,7 +43,9 @@ export default function MetricsStrip({ stats }: MetricsStripProps) {
         return () => {
             cancelAnimationFrame(frame);
         };
-    }, []);
+    }, [stats]);
+
+    if (items.length === 0) return null;
 
     return (
         <div

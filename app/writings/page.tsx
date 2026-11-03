@@ -1,9 +1,7 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import { client } from "@/app/lib/sanity";
 import { WRITINGS_QUERY, PROFILE_QUERY } from "@/app/lib/sanity.queries";
 import { WritingData, ProfileData } from "@/app/types/sanity";
-import { fallbackWritings } from "@/app/lib/fallback-data";
 import SubPageLayout from "@/app/components/SubPageLayout";
 import BackButton from "@/app/components/BackButton";
 import WritingsClient from "./WritingsClient";
@@ -30,8 +28,6 @@ export default async function WritingsPage() {
     console.error("Failed to fetch writings from Sanity:", err);
   }
 
-  const finalWritings = writings.length > 0 ? writings : (fallbackWritings as unknown as WritingData[]);
-
   return (
     <SubPageLayout profile={profile}>
       <div className="w-full flex flex-col">
@@ -50,7 +46,7 @@ export default async function WritingsPage() {
         </div>
 
         {/* Writings List with Search & Filters */}
-        <WritingsClient writings={finalWritings} />
+        <WritingsClient writings={writings} />
       </div>
     </SubPageLayout>
   );

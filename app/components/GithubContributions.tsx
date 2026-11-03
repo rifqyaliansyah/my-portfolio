@@ -16,13 +16,13 @@ interface GithubContributionsProps {
   username?: string;
 }
 
-export default function GithubContributions({ username = "rifqyaliansyah" }: GithubContributionsProps) {
+export default function GithubContributions({ username }: GithubContributionsProps) {
   const [mounted, setMounted] = useState(false);
   const [totalContributions, setTotalContributions] = useState<number | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
-  const targetUsername = username || "rifqyaliansyah";
+  const targetUsername = username ?? "";
 
   useEffect(() => {
     setMounted(true);
@@ -43,6 +43,8 @@ export default function GithubContributions({ username = "rifqyaliansyah" }: Git
   }, [targetUsername]);
 
   useEffect(() => {
+    if (!targetUsername) return;
+
     const controller = new AbortController();
 
     setStatus("loading");
@@ -72,6 +74,8 @@ export default function GithubContributions({ username = "rifqyaliansyah" }: Git
 
     return () => controller.abort();
   }, [targetUsername]);
+
+  if (!targetUsername) return null;
 
   const description = status === "ready" && totalContributions !== null
     ? `${totalContributions} contributions in the last year`

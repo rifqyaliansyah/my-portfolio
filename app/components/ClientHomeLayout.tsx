@@ -18,6 +18,8 @@ interface ClientHomeLayoutProps {
 }
 
 export default function ClientHomeLayout({ data }: ClientHomeLayoutProps) {
+  const githubUsername = data?.profile?.githubUsername;
+
   useEffect(() => {
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
@@ -61,7 +63,9 @@ export default function ClientHomeLayout({ data }: ClientHomeLayoutProps) {
 
         <Writing writings={data?.writings} />
 
-        <GithubContributions username={data?.profile?.githubUsername} />
+        {githubUsername && (
+          <GithubContributions username={githubUsername} />
+        )}
 
         <ToolsIUse tools={data?.tools} />
 

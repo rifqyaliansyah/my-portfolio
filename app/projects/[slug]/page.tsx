@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { client } from "@/app/lib/sanity";
 import { PROJECT_BY_SLUG_QUERY, ALL_PROJECTS_QUERY, PROFILE_QUERY } from "@/app/lib/sanity.queries";
 import { ProjectData, ProfileData } from "@/app/types/sanity";
-import { fallbackProjects } from "@/app/lib/fallback-data";
 import { urlFor } from "@/app/lib/sanity";
 import SubPageLayout from "@/app/components/SubPageLayout";
 import CustomPortableText from "@/app/components/CustomPortableText";
@@ -30,9 +29,7 @@ export async function generateStaticParams() {
     console.error("Error generating static params for projects:", e);
   }
 
-  return fallbackProjects
-    .filter((p) => p.slug?.current)
-    .map((p) => ({ slug: p.slug.current }));
+  return [];
 }
 
 export async function generateMetadata({ params }: ProjectDetailPageProps): Promise<Metadata> {
@@ -42,11 +39,7 @@ export async function generateMetadata({ params }: ProjectDetailPageProps): Prom
   try {
     project = await client.fetch<ProjectData>(PROJECT_BY_SLUG_QUERY, { slug });
   } catch (e) {
-    // fallback
-  }
-
-  if (!project) {
-    project = (fallbackProjects.find((p) => p.slug?.current === slug) as unknown as ProjectData) || null;
+    project = null;
   }
 
   if (!project) {
@@ -78,11 +71,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     profile = fetchedProfile;
   } catch (err) {
     console.error("Error fetching project detail:", err);
-  }
-
-  if (!project) {
-    project = (fallbackProjects.find((p) => p.slug?.current === slug) as unknown as ProjectData) || null;
-    allProjects = fallbackProjects as unknown as ProjectData[];
   }
 
   if (!project) {
@@ -120,19 +108,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     });
   }
 
-  // If no images at all, add default fallback
-  if (galleryImages.length === 0) {
-    const fallbackItem = (fallbackProjects as any).find((p: any) => p.slug?.current === slug);
-    if (fallbackItem?.gallery && fallbackItem.gallery.length > 0) {
-      galleryImages.push(...fallbackItem.gallery);
-    } else {
-      galleryImages.push({
-        src: (project as any).imageSrc || "/example.jpg",
-        alt: project.title,
-      });
-    }
-  }
-
   // More Projects (Filter out current project, shuffle deterministically, take up to 3)
   const otherProjects = allProjects.filter((p) => p.slug?.current !== slug);
   const moreProjects = seededShuffle(otherProjects, slug).slice(0, 3);
@@ -156,9 +131,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           </p>
 
           {/* E-Commerce Style Image Gallery with Lightbox */}
-          <div className="mt-4">
-            <ProjectGallery images={galleryImages} title={project.title} />
-          </div>
+          {galleryImages.length > 0 && (
+            <div className="mt-4">
+              <ProjectGallery images={galleryImages} title={project.title} />
+            </div>
+          )}
         </header>
 
         {/* Action Links (Live Preview & Source Code) */}
@@ -197,20 +174,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         )}
 
         {/* Content Body - Single Rich Text portable text field */}
-        <div className="w-full mt-8 md:mt-10">
-          {project.content && project.content.length > 0 ? (
+        {project.content && project.content.length > 0 && (
+          <div className="w-full mt-8 md:mt-10">
             <CustomPortableText value={project.content} />
-          ) : (
-            <div className="flex flex-col gap-6 text-brand-secondary text-[16px] md:text-[17px] leading-[1.85]">
-              <p className="text-lg md:text-xl font-medium text-brand-primary leading-relaxed">
-                {project.description} This project was engineered to deliver optimal performance, intuitive user experience, and robust frontend scalability.
-              </p>
-              <p>
-                From interactive components to backend data integration, every layer is designed to maintain high code readability, seamless responsiveness across viewport sizes, and accessibility standard compliance.
-              </p>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* More Projects Section (replacing Next / Previous) */}
         {moreProjects.length > 0 && (
@@ -226,7 +194,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
               {moreProjects.map((p, idx) => {
                 const imageSrc = p.coverImage
                   ? urlFor(p.coverImage).width(608).height(400).auto("format").url()
-                  : (p as any).imageSrc || "/example.jpg";
+                  : undefined;
                 const href = p.slug?.current
                   ? `/projects/${p.slug.current}`
                   : p.projectUrl || "/projects";

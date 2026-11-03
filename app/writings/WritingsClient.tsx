@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Card from "@/app/components/Card";
+import EmptyState from "@/app/components/EmptyState";
 import { WritingData } from "@/app/types/sanity";
 import { urlFor } from "@/app/lib/sanity";
 
@@ -35,6 +36,16 @@ export default function WritingsClient({ writings }: WritingsClientProps) {
       return matchesTag && matchesSearch;
     });
   }, [writings, selectedTag, searchQuery]);
+
+  if (writings.length === 0) {
+    return (
+      <EmptyState
+        className="mt-8"
+        title="No writings yet"
+        description="Articles will appear here once they are published."
+      />
+    );
+  }
 
   return (
     <div className="w-full flex flex-col">
@@ -94,7 +105,7 @@ export default function WritingsClient({ writings }: WritingsClientProps) {
           {filteredWritings.map((article, idx) => {
             const imageSrc = article.coverImage
               ? urlFor(article.coverImage).width(608).height(400).auto("format").url()
-              : (article as any).imageSrc || "/example.jpg";
+              : undefined;
             const hasExternalUrl = Boolean(article.externalUrl && (article.externalUrl.startsWith("http://") || article.externalUrl.startsWith("https://")));
             const href = hasExternalUrl
               ? article.externalUrl!

@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { SanityImage } from "@/app/types/sanity";
 import { urlFor } from "@/app/lib/sanity";
-import { fallbackHeroPreviewImages } from "@/app/lib/fallback-data";
 import ImageLightbox from "./ImageLightbox";
 
 interface ImageStackProps {
@@ -20,16 +19,11 @@ export default function ImageStack({ previewImages }: ImageStackProps) {
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const [startIndex, setStartIndex] = useState(0);
 
-    const imagesToRender = previewImages && previewImages.length > 0
-        ? previewImages.map((img, i) => ({
-            src: urlFor(img).width(736).height(400).auto('format').url(),
-            previewSrc: urlFor(img).width(1920).auto('format').url(),
-            alt: img.alt || `Hero Preview ${i + 1}`,
-        }))
-        : fallbackHeroPreviewImages.map((img) => ({
-            ...img,
-            previewSrc: img.src,
-        }));
+    const imagesToRender = (previewImages ?? []).map((img, i) => ({
+        src: urlFor(img).width(736).height(400).auto('format').url(),
+        previewSrc: urlFor(img).width(1920).auto('format').url(),
+        alt: img.alt || `Hero Preview ${i + 1}`,
+    }));
 
     const totalImages = imagesToRender.length;
     const maxIndex = Math.max(0, totalImages - VISIBLE_COUNT);
@@ -48,6 +42,8 @@ export default function ImageStack({ previewImages }: ImageStackProps) {
         setLightboxIndex(index);
         setIsLightboxOpen(true);
     };
+
+    if (totalImages === 0) return null;
 
     return (
         <>
