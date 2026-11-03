@@ -240,7 +240,7 @@ export default function Hero({ profile }: HeroProps) {
 
       {previewImages.length > 0 && (
         <div className="w-full lg:w-auto shrink-0">
-          <ImageStack previewImages={previewImages} />
+          <ImageStack previewImages={previewImages} visibleCount={stats.length > 0 ? 3 : 2} />
         </div>
       )}
     </section>

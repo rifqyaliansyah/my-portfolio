@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { SanityImage } from "@/app/types/sanity";
 import { urlFor } from "@/app/lib/sanity";
@@ -8,13 +8,12 @@ import ImageLightbox from "./ImageLightbox";
 
 interface ImageStackProps {
     previewImages?: SanityImage[] | null;
+    visibleCount?: number;
 }
 
-const VISIBLE_COUNT = 3;
 const GAP = 16;
-const VIEWPORT_HEIGHT = "calc(100cqw * 600 / 368 + 32px)";
 
-export default function ImageStack({ previewImages }: ImageStackProps) {
+export default function ImageStack({ previewImages, visibleCount = 3 }: ImageStackProps) {
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const [startIndex, setStartIndex] = useState(0);
@@ -26,9 +25,16 @@ export default function ImageStack({ previewImages }: ImageStackProps) {
     }));
 
     const totalImages = imagesToRender.length;
-    const maxIndex = Math.max(0, totalImages - VISIBLE_COUNT);
-    const hasMultiplePages = totalImages > VISIBLE_COUNT;
+    const requestedVisibleCount = Math.max(1, Math.floor(visibleCount));
+    const effectiveVisibleCount = Math.min(requestedVisibleCount, totalImages || 1);
+    const maxIndex = Math.max(0, totalImages - effectiveVisibleCount);
+    const hasMultiplePages = totalImages > effectiveVisibleCount;
     const trackOffset = totalImages > 0 ? startIndex / totalImages : 0;
+    const viewportHeight = `calc(100cqw * ${200 * effectiveVisibleCount} / 368 + ${GAP * Math.max(0, effectiveVisibleCount - 1)}px)`;
+
+    useEffect(() => {
+        setStartIndex((prev) => Math.min(prev, maxIndex));
+    }, [maxIndex]);
 
     const handlePrev = () => {
         setStartIndex((prev) => Math.max(0, prev - 1));
@@ -69,7 +75,7 @@ export default function ImageStack({ previewImages }: ImageStackProps) {
 
                 <div
                     className="relative w-full overflow-hidden rounded-2xl"
-                    style={{ height: VIEWPORT_HEIGHT }}
+                    style={{ height: viewportHeight }}
                 >
                     {hasMultiplePages && startIndex > 0 && (
                         <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-bg-page/60 to-transparent z-10 pointer-events-none transition-opacity duration-300" />
