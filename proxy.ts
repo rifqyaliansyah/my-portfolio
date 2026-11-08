@@ -4,17 +4,21 @@ import type { NextRequest } from "next/server";
 const isMaintenanceMode = process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "true";
 
 export function proxy(request: NextRequest) {
-  if (!isMaintenanceMode) {
-    return NextResponse.next();
+  const isMaintenancePage = request.nextUrl.pathname === "/maintenance";
+
+  if (isMaintenanceMode) {
+    return isMaintenancePage
+      ? NextResponse.next()
+      : NextResponse.redirect(new URL("/maintenance", request.url));
   }
 
-  if (request.nextUrl.pathname === "/maintenance") {
-    return NextResponse.next();
+  if (isMaintenancePage) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  return NextResponse.redirect(new URL("/maintenance", request.url));
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!_next|api|maintenance|.*\\..*).*)"],
+  matcher: ["/((?!_next|api|.*\\..*).*)"],
 };
